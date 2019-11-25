@@ -72,4 +72,4 @@ endif()
 link_libraries(pthread)
 
 add_subdirectory(applications)
-add_subdirectory(tests)
+
