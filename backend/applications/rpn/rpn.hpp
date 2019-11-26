@@ -8,6 +8,10 @@
 using namespace std;
 using Calculation = vector <Token>;
 
+/*This is a representation of the calculator. It is initialized by the String input which gets transformed
+    at construction to to Tokens containing the operations. The circuit composition happens lazily when a
+    calculation with a specified library is requested.
+*/
 class Rpn{
     public:
         Calculation calc;
