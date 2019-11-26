@@ -18,11 +18,13 @@ static const std::map<std::string, unoptype> unop_map = {
     {"^-1", unoptype::Invert},
     {"^1/2", unoptype::SquareRoot}};
 
-class UnOp: Op
+class UnOp: public Op
 {
 private:
     /* data */
 public:
+    UnOp(unoptype unopt);
+    unoptype utp;
 };
 
 

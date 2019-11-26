@@ -11,6 +11,9 @@ target_sources(rpn_main
         PRIVATE
 	rpn/token.cpp
         rpn/rpn.cpp
+	rpn/intop.cpp
+	rpn/unop.cpp
+	rpn/binop.cpp
 )
 target_link_libraries(rpn_main ${LP_LIBRARIES} ${HElib_LIBRARIES} ${NTL_LIBRARIES} ${GMP_LIBRARIES} ${TFHE_LIBRARIES})
 

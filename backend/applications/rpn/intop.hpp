@@ -3,11 +3,13 @@
 
 #include "op.hpp"
 
-class IntOp: Op
+class IntOp: public Op
 {
 private:
     /* data */
 public:
+    IntOp(int in);
+    int i;
 };
 
 

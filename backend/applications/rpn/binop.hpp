@@ -16,12 +16,14 @@ static const std::map<std::string, binoptype> binop_map = {
     {"+", binoptype::Add},
     {"*", binoptype::Multiply},
     {"/", binoptype::Divide}};
-    
-class BinOp: Op
+
+class BinOp: public Op
 {
 private:
     /* data */
 public:
+    BinOp(binoptype binopt);
+    binoptype btp;
 };
 
 
