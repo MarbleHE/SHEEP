@@ -13,9 +13,9 @@ vector <int> getLibs();
 
 int main(){
     string calc = getCalc();
+    Rpn rpn(calc); //maybe instead of isValid() here, put sanity check in constructor and handle with errors and try block
     vector <int> libs = getLibs();
     //for (auto x : libs) std::cout << std::to_string(x) << " "; //TODO print selected libraries
-    Rpn rpn(calc);
     for (auto x: libs) rpn.calcWith(x);
 }
 

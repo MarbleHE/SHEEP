@@ -1,14 +1,16 @@
 #ifndef RPN_HPP
 #define RPN_HPP
 
+#include <vector>
+#include "token.hpp"
 #include "simple-circuits.hpp"
 
-//using Calculation = vector <Token>;
 using namespace std;
+using Calculation = vector <Token>;
 
 class Rpn{
     public:
-        //Calculation calc;
+        Calculation calc;
         Rpn(string calculation);
         void calcWith(int library);
     private:

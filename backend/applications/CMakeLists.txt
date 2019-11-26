@@ -9,7 +9,9 @@ add_executable(rpn_main
   ${CMAKE_SOURCE_DIR}/src/simple-circuits.cpp)
 target_sources(rpn_main
         PRIVATE
-        rpn/rpn.cpp)
+	rpn/token.cpp
+        rpn/rpn.cpp
+)
 target_link_libraries(rpn_main ${LP_LIBRARIES} ${HElib_LIBRARIES} ${NTL_LIBRARIES} ${GMP_LIBRARIES} ${TFHE_LIBRARIES})
 
 ####################################################################################
