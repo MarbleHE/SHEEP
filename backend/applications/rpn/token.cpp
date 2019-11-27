@@ -14,15 +14,19 @@ Token::Token (string srep){
     auto unop = unop_map.find(rep);
     if (binop != binop_map.end() )
     {
-        op = BinOp(binop->second);
+        op = new BinOp(binop->second);
     }
     if (unop != unop_map.end()){
-        op = UnOp(unop->second);
+        op = new UnOp(unop->second);
     }
     if (binop == binop_map.end() && unop == unop_map.end())
     {
-        op = IntOp(stoi(rep));
+        op = new IntOp(stoi(rep));
     }
     
     
+}
+
+Token::~Token(){
+    delete op;
 }

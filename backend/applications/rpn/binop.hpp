@@ -1,9 +1,10 @@
-#ifndef BINOP_HPP
-#define BINOP_HPP
+#pragma once
 
 #include <map>
+#include "circuit.hpp"
 #include "op.hpp"
 
+//this is just so that we don't have magic strings/numbers
 enum class binoptype {
   Add,
   Subtract,
@@ -11,6 +12,7 @@ enum class binoptype {
   Divide
 };
 
+//This map is used for matching strings with operations
 static const std::map<std::string, binoptype> binop_map = {
     {"-", binoptype::Subtract},
     {"+", binoptype::Add},
@@ -24,8 +26,5 @@ private:
 public:
     BinOp(binoptype binopt);
     binoptype btp;
+    void handleOp(Circuit *c);
 };
-
-
-
-#endif

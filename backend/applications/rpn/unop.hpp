@@ -1,10 +1,10 @@
-#ifndef UNOP_HPP
-#define UNOP_HPP
+#pragma once
 
 #include <string>
 #include <map>
 #include "op.hpp"
 
+//this is just so that we don't have magic strings/numbers
 enum class unoptype {
   Negate,
   Square,
@@ -12,6 +12,7 @@ enum class unoptype {
   SquareRoot
 };
 
+//This map is used for matching strings with operations
 static const std::map<std::string, unoptype> unop_map = {
     {"--", unoptype::Negate},
     {"^2", unoptype::Square},
@@ -25,10 +26,6 @@ private:
 public:
     UnOp(unoptype unopt);
     unoptype utp;
+    void handleOp(Circuit *c);
 };
 
-
-
-
-
-#endif

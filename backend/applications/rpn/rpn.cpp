@@ -4,7 +4,8 @@
 #include <stack>
 #include "rpn.hpp"
 #include "token.hpp"
-#include "simple-circuits.hpp"
+#include "op.hpp"
+//#include "simple-circuits.hpp"
 
 enum libs {Plaintext = 0}; //TODO add all
 
@@ -23,7 +24,7 @@ Rpn::Rpn(string calculation){
 
 //composes a circuit with the desired library and calculations and runs it.
 void Rpn::calcWith(int library){
-    Circuit c = composeCircuit(library);
+    composeCircuit(library);
     switch (library)
     {
     case Plaintext:
@@ -37,13 +38,13 @@ void Rpn::calcWith(int library){
 }
 
 //composes a circuit given a library based on the calculation stored in the object.
-Circuit Rpn::composeCircuit(int library){
+void Rpn::composeCircuit(int library){
     stack<Token> s;
-    Circuit c;
+    int counter = 0;
     for (auto i = calc.begin(); i != calc.end(); ++i){
-        Op cop = i->op;
+        Op *cop = i->op;
+        cop->handleOp(&c);
         //compose circuit, make all plaintext numbers ciphertexts and put into private array for eval. Or maybe I nee to put them into a mapping int,Wire...?
+        counter++;
     }
-
-    return c;
 }

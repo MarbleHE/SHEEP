@@ -1,9 +1,8 @@
-#ifndef RPN_HPP
-#define RPN_HPP
+#pragma once
 
 #include <vector>
+#include <map>
 #include "token.hpp"
-#include "simple-circuits.hpp"
 
 using namespace std;
 using Calculation = vector <Token>;
@@ -14,12 +13,12 @@ using Calculation = vector <Token>;
 */
 class Rpn{
     public:
-        Calculation calc;
         Rpn(string calculation);
         void calcWith(int library);
     private:
         //vector<int> stack; //might put this in buildCircuit function.
-        Circuit composeCircuit(int library);
+        Calculation calc;
+        void composeCircuit(int library);
+        Circuit c;
+        vector<int> ptvec;
 };
-
-#endif

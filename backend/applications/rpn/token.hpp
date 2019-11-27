@@ -1,5 +1,4 @@
-#ifndef TOKEN_HPP
-#define TOKEN_HPP
+#pragma once
 
 #include <string>
 #include "op.hpp"
@@ -8,10 +7,9 @@
 class Token {
     public:
         Token(std::string srep);
-        Op op;
+        ~Token(); //destructor deletes allocated operation in op.
+        Op *op; //this has to be a pointer, because Op is abstract
     private:
         std::string rep;
 };
 
-
-#endif

@@ -1,6 +1,6 @@
-#ifndef INTOP_HPP
-#define INTOP_HPP
+#pragma once
 
+#include "circuit.hpp"
 #include "op.hpp"
 
 class IntOp: public Op
@@ -10,10 +10,7 @@ private:
 public:
     IntOp(int in);
     int i;
+    void handleOp(Circuit *c);
 };
 
 
-
-
-
-#endif

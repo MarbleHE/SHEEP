@@ -1,13 +1,12 @@
-#ifndef OP_HPP
-#define OP_HPP
+#pragma once
 
-//Base class for an operation
+#include "circuit.hpp"
+
+//abstract Base class for an operation. Cannot be instantiated, but the subclass objects can be accessed via pointer.
 class Op
 {
 private:
 public:
+    virtual void handleOp(Circuit *c) = 0;
 };
 
-
-
-#endif
