@@ -19,10 +19,10 @@ class Rpn{
         Rpn(string calculation);
         void calcWith(int library);
     private:
-        //vector<int> stack; //might put this in buildCircuit function.
         Calculation calc;
         void composeCircuit(int library);
         Circuit c;
         vector<int> ptvec;
         inttype minBits();
+        void plaintextINT_16();
 };
