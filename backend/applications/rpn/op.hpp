@@ -8,5 +8,7 @@ class Op
 private:
 public:
     virtual void handleOp(Circuit *c) = 0;
+    //virtual ~Op(){};
 };
 
+//void handleOp(){};

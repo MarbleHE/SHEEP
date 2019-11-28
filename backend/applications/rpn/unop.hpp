@@ -19,13 +19,13 @@ static const std::map<std::string, unoptype> unop_map = {
     {"^-1", unoptype::Invert},
     {"^1/2", unoptype::SquareRoot}};
 
-class UnOp: public Op
+class UnOp: public virtual Op
 {
 private:
     /* data */
 public:
     UnOp(unoptype unopt);
     unoptype utp;
-    void handleOp(Circuit *c);
+    virtual void handleOp(Circuit *c);
 };
 

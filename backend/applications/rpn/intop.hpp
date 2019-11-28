@@ -3,14 +3,14 @@
 #include "circuit.hpp"
 #include "op.hpp"
 
-class IntOp: public Op
+class IntOp: public virtual Op
 {
 private:
     /* data */
 public:
     IntOp(int in);
     int i;
-    void handleOp(Circuit *c);
+    virtual void handleOp(Circuit *c);
 };
 
 

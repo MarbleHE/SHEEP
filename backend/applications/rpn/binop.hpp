@@ -19,12 +19,12 @@ static const std::map<std::string, binoptype> binop_map = {
     {"*", binoptype::Multiply},
     {"/", binoptype::Divide}};
 
-class BinOp: public Op
+class BinOp: public virtual Op
 {
 private:
     /* data */
 public:
     BinOp(binoptype binopt);
     binoptype btp;
-    void handleOp(Circuit *c);
+    virtual void handleOp(Circuit *c);
 };
