@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stack>
 #include "circuit.hpp"
 #include "op.hpp"
 
@@ -13,7 +14,7 @@ private:
 public:
     IntOp(int in);
     int i;
-    void handleOp(Circuit *c, vector<int> *ptvec);
+    void handleOp(vector<int> *ptvec, stack<Circuit> *s);
 };
 
 

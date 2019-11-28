@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <stack>
 #include "op.hpp"
 
 //this is just so that we don't have magic strings/numbers
@@ -27,6 +28,6 @@ private:
 public:
     UnOp(unoptype unopt);
     unoptype utp;
-    void handleOp(Circuit *c, std::vector<int> *ptvec);
+    void handleOp(std::vector<int> *ptvec, std::stack<Circuit> *s);
 };
 

@@ -39,12 +39,20 @@ void Rpn::calcWith(int library){
 
 //composes a circuit given a library based on the calculation stored in the object.
 void Rpn::composeCircuit(int library){
-    stack<Token> s;
+    stack<Circuit> *s = new stack<Circuit>;
     int counter = 0;
     for (auto i = calc.begin(); i != calc.end(); ++i){
         Op *cop = i->op;
-        cop->handleOp(&c, &ptvec);
+        cop->handleOp(&ptvec, s);
         //compose circuit, make all plaintext numbers ciphertexts and put into private array for eval. Or maybe I nee to put them into a mapping int,Wire...?
         counter++;
     }
+    // stack should now only contain the final circuit.
+    if (s->size() > 1)
+    {
+        throw runtime_error("More than one Circuit remains in stack. Either the RPN was illegal, or Circuit composition failed.");
+    }
+    c = s->top();
+    s->pop();
+    delete s;
 }

@@ -2,6 +2,7 @@
 
 #include <map>
 #include <vector>
+#include <stack>
 #include "circuit.hpp"
 #include "op.hpp"
 
@@ -29,5 +30,5 @@ private:
 public:
     BinOp(binoptype binopt);
     binoptype btp;
-    void handleOp(Circuit *c, vector<int> *ptvec);
+    void handleOp(vector<int> *ptvec, stack<Circuit> *s);
 };
