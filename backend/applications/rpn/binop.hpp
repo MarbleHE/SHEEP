@@ -26,5 +26,5 @@ private:
 public:
     BinOp(binoptype binopt);
     binoptype btp;
-    virtual void handleOp(Circuit *c);
+    void handleOp(Circuit *c);
 };

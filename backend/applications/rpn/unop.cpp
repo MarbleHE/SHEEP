@@ -5,4 +5,4 @@ UnOp::UnOp(unoptype unopt){
     utp = unopt;
 }
 
-void handleOp(Circuit *c){}
+void UnOp::handleOp(Circuit *c){}

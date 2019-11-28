@@ -5,4 +5,4 @@ IntOp::IntOp (int in){
     i = in;
 }
 
-void handleOp(Circuit *c){}
+void IntOp::handleOp(Circuit *c){}

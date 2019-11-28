@@ -6,4 +6,4 @@ BinOp::BinOp (binoptype binopt){
 }
 
 
-void handleOp(Circuit *c){}
+void BinOp::handleOp(Circuit *c){}
