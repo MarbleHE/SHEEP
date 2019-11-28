@@ -43,7 +43,7 @@ void Rpn::composeCircuit(int library){
     int counter = 0;
     for (auto i = calc.begin(); i != calc.end(); ++i){
         Op *cop = i->op;
-        cop->handleOp(&c);
+        cop->handleOp(&c, &ptvec);
         //compose circuit, make all plaintext numbers ciphertexts and put into private array for eval. Or maybe I nee to put them into a mapping int,Wire...?
         counter++;
     }

@@ -1,16 +1,19 @@
 #pragma once
 
+#include <vector>
 #include "circuit.hpp"
 #include "op.hpp"
 
-class IntOp: public virtual Op
+using namespace std;
+
+class IntOp: public Op
 {
 private:
     /* data */
 public:
     IntOp(int in);
     int i;
-    virtual void handleOp(Circuit *c);
+    void handleOp(Circuit *c, vector<int> *ptvec);
 };
 
 
