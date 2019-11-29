@@ -3,7 +3,7 @@
 #include <sstream>
 #include <stack>
 #include <vector>
-#include <list>
+#include <vector>
 #include <memory>
 #include <cmath>
 #include <context.hpp>
@@ -110,28 +110,24 @@ inttype Rpn::minBits(){
 }
 
 void Rpn::plaintextINT_16(){
-    //NOTE: This seems to be an example with an outdated interface. Compile does not exist.
-    ContextClear<int16_t> ctx;
-    //ContextClear<int16_t>::CircuitEvaluator run_circuit; run_circuit = ctx.compile(c);*/
-    //loads inputs from ptvec and casts them to the new type
-    list<ContextClear<int16_t>::Plaintext> plaintext_inputs;
+    typedef std::vector<std::vector<ContextClear<int16_t>::Plaintext>> PtVec;
+
+    std::cout << "Constructing context...\n";
+    ContextClear<int16_t> ctx;  // paramset, bootstrappable
+
+    PtVec inputs;
     for (int i: ptvec){
-        plaintext_inputs.push_back((ContextClear<int16_t>::Plaintext) i);
+        vector<ContextClear<int16_t>::Plaintext> v = {(ContextClear<int16_t>::Plaintext) i};
+        inputs.push_back(v);
     }
-    list<ContextClear<int16_t>::Ciphertext> ciphertext_inputs;
 
-    for (ContextClear<int16_t>::Plaintext pt: plaintext_inputs)
-      ciphertext_inputs.push_back(ctx.encrypt(pt)); //TODO why does this expect a whole Plaintext vector? Outdated interface?
+    std::cout << "Inputs are: ";
+    for (auto x : inputs) std::cout << std::to_string(x[0]) << " ";
+    std::cout << std::endl;
 
-    list<ContextClear<int16_t>::Ciphertext> ciphertext_outputs;
-    using microsecond = std::chrono::duration<double, std::micro>;
-    microsecond time = ctx.eval(c, ciphertext_inputs, ciphertext_outputs);
+    PtVec sorted = ctx.eval_with_plaintexts(c, inputs);
 
-    list<ContextClear<int16_t>::Plaintext> plaintext_outputs;
-    for (ContextClear<int16_t>::Ciphertext ct: ciphertext_outputs) {
-      ContextClear<int16_t>::Plaintext pt = ctx.decrypt(ct);
-      plaintext_outputs.push_back(pt);
-      std::cout << "output: "<<std::to_string(pt) << std::endl;
-    }
-    std::cout << "time was " << time.count() << " microseconds\n";
+    std::cout << "Sorted result is: ";
+    for (auto x : sorted) std::cout << std::to_string(x[0]) << " ";
+    std::cout << std::endl;
     }
