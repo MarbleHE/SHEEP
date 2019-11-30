@@ -24,6 +24,8 @@ int main(){
 string getCalc(){
     string in;
     cout << "Welcome to the HE reverse polish notation calculator. Enter your calculation with whitespaces as separator.\n";
+    cout << "Example: ((2 + 3) * (4 + 5)) * 2 written in RPN 2 3 + 4 5 + * 2 * and should equate to 90." << endl;
+    cout << "Write calculation and hit enter: ";
     getline(cin, in);
     while (! isValid(in)){
         cout << "Error: Input invalid. Try again.\n";

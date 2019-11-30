@@ -24,5 +24,6 @@ class Rpn{
         Circuit c;
         vector<int> ptvec;
         inttype minBits();
-        void plaintextINT_16();
+        void plaintext();
 };
+

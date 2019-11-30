@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <string>
 #include <istream>
 #include <sstream>
@@ -33,21 +34,19 @@ Rpn::Rpn(string calculation){
 void Rpn::calcWith(int library){
     composeCircuit();
     inttype mbits = minBits();
-    //Context *ctxt;
     cout << c;
     switch (library)
     {
     case Plaintext:
     {
-        //TODO: case switch based on mbits.
-        //I don't know how to do it better, but the template needs to be initialized with a type.
+        //case switch based on minimal number of bits needed for representation of inputs
         switch (mbits)
         {
         case inttype::INT_8:
-            /* plaintextINT_8(); */
+            plaintext(); //TODO: use template instead
             break;
         case inttype::INT_16:
-            plaintextINT_16();
+            plaintext();
         default:
             break;
         }
@@ -108,25 +107,27 @@ inttype Rpn::minBits(){
     throw invalid_argument("Integer too large for 64 bits");
 }
 
-void Rpn::plaintextINT_16(){
-    typedef std::vector<std::vector<ContextClear<int16_t>::Plaintext>> PtVec;
+//TODO: implement as template with intType getting int8_t, int16_t, etc...
+void Rpn::plaintext(){
+    typedef vector<vector<ContextClear<int16_t>::Plaintext>> PtVec;
 
-    std::cout << "Constructing context...\n";
-    ContextClear<int16_t> ctx;  // paramset, bootstrappable
+    cout << "Constructing context plaintext...\n";
+    ContextClear<int16_t > ctx;  // paramset, bootstrappable
 
     PtVec inputs;
     for (int i: ptvec){
-        vector<ContextClear<int16_t>::Plaintext> v = {(ContextClear<int16_t>::Plaintext) i};
+        vector<ContextClear<int16_t >::Plaintext> v = {(ContextClear<int16_t >::Plaintext) i};
         inputs.push_back(v);
     }
 
-    std::cout << "Inputs are: ";
-    for (auto x : inputs) std::cout << std::to_string(x[0]) << " ";
-    std::cout << std::endl;
+    cout << "Inputs are: ";
+    for (auto x : inputs) cout << to_string(x[0]) << " ";
+    cout << endl;
 
-    PtVec sorted = ctx.eval_with_plaintexts(c, inputs);
+    reverse(inputs.begin(),inputs.end()); //This hack is somehow necessary, as input somehow get inserted in reversed order into the Circuit....?
+    PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs);
 
-    std::cout << "Sorted result is: ";
-    for (auto x : sorted) std::cout << std::to_string(x[0]) << " ";
-    std::cout << std::endl;
+    cout << "Sorted result is: ";
+    for (auto x : sortedPtV) cout << to_string(x[0]) << " ";
+    cout << endl;
     }
