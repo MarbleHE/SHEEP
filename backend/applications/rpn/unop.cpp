@@ -32,11 +32,17 @@ void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     }
     case unoptype::Square:
     {
+        Circuit spreader;
+        Wire in1 = spreader.add_input("in1");
+        Wire out1 = spreader.add_assignment("out1", Gate::Alias, in1);
+        Wire out2 = spreader.add_assignment("ou2", Gate::Alias, in1);
+        spreader.set_output(out1);
+        spreader.set_output(out2);
         uc = single_binary_gate_circuit(Gate::Multiply);
-        Circuit l;
-        l = s->top();
+        Circuit in;
+        in = s->top();
         s->pop();
-        Circuit sc = seq(par(l, l),uc);
+        Circuit sc = seq(seq(in, spreader),uc);
         s->push(sc);
         break;
     }
