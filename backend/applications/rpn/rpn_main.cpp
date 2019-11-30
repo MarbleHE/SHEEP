@@ -12,20 +12,22 @@ bool isValid(string s);
 vector <int> getLibs();
 
 int main(){
-    string calc = getCalc();
-    Rpn rpn(calc); //maybe instead of isValid() here, put sanity check in constructor and handle with errors and try block
-    vector <int> libs = getLibs();
-    //for (auto x : libs) std::cout << std::to_string(x) << " "; //TODO print selected libraries
-    for (auto x: libs) rpn.calcWith(x);
+    cout << "Welcome to the HE reverse polish notation calculator powered with SHEEP. Enter your calculation with whitespaces as separator.\n";
+    cout << "Example: ((2 + 3) * (4 + 5)) * 2 written in RPN is 2 3 + 4 5 + * 2 * and should equate to 90." << endl;
+    while (true) {
+        string calc = getCalc();
+        Rpn rpn(calc); //maybe instead of isValid() here, put sanity check in constructor and handle with errors and try block
+        vector<int> libs = getLibs();
+        //for (auto x : libs) std::cout << std::to_string(x) << " "; //TODO print selected libraries
+        for (auto x: libs) rpn.calcWith(x);
+    }
 }
 
 // get from stdin the calculation in RPN and return as a string.
 //If it is invalid, the user is prompted to retype the calculation.
 string getCalc(){
     string in;
-    cout << "Welcome to the HE reverse polish notation calculator. Enter your calculation with whitespaces as separator.\n";
-    cout << "Example: ((2 + 3) * (4 + 5)) * 2 written in RPN 2 3 + 4 5 + * 2 * and should equate to 90." << endl;
-    cout << "Write calculation and hit enter: ";
+    cout << "\nWrite a new calculation and hit enter: ";
     getline(cin, in);
     while (! isValid(in)){
         cout << "Error: Input invalid. Try again.\n";
