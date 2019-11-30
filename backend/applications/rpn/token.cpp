@@ -26,7 +26,7 @@ Token::Token (string srep){
     
     
 }
-
+/*
 Token::~Token(){
     delete op;
-}
+}*/

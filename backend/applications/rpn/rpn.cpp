@@ -19,19 +19,19 @@ using namespace SHEEP;
 
 //Transform to tokens containing ints or ops. Whitespace separator.
 Rpn::Rpn(string calculation){
-    vector<Token> tokens;
+   // vector<Token> tokens;
     istringstream iss(calculation);
     string s;
     while (getline(iss, s, ' ')){
-        tokens.push_back(Token(s));
+        calc.push_back(Token(s));
     }
-    calc = tokens;
+   // calc = tokens;
 }
 
 
 //composes a circuit with the desired library and calculations and runs it.
 void Rpn::calcWith(int library){
-    composeCircuit(library);
+    composeCircuit();
     inttype mbits = minBits();
     //Context *ctxt;
     cout << c;
@@ -61,11 +61,10 @@ void Rpn::calcWith(int library){
 }
 
 //composes a circuit given a library based on the calculation stored in the object.
-void Rpn::composeCircuit(int library){
-    stack<Circuit> *s = new stack<Circuit>;
-    for (auto i = calc.begin(); i != calc.end(); ++i){
-        Op *cop = i->op;
-        cop->handleOp(&ptvec, s);
+void Rpn::composeCircuit(){
+    auto *s = new stack<Circuit>;
+    for (Token t: calc ){
+        t.op->handleOp(&ptvec, s);
         //compose circuit, make all plaintext numbers ciphertexts and put into private array for eval. Or maybe I nee to put them into a mapping int,Wire...?
     }
     // stack should now only contain the final circuit.

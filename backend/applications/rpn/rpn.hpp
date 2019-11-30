@@ -20,7 +20,7 @@ class Rpn{
         void calcWith(int library);
     private:
         Calculation calc;
-        void composeCircuit(int library);
+        void composeCircuit();
         Circuit c;
         vector<int> ptvec;
         inttype minBits();

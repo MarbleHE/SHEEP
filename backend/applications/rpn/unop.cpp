@@ -12,7 +12,7 @@ UnOp::UnOp(unoptype unopt){
 }
 
 void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
-    if (s->size() < 1)
+    if (s->empty())
     {
         throw runtime_error("Stack has not enough input for unary gate.");
     }
@@ -26,7 +26,7 @@ void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
         Circuit l;
         l = s->top();
         s->pop();
-        Circuit sc = seq(uc, l);
+        Circuit sc = seq(l,uc);
         s->push(sc);
         break;
     }
@@ -36,7 +36,7 @@ void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
         Circuit l;
         l = s->top();
         s->pop();
-        Circuit sc = seq(uc, par(l, l));
+        Circuit sc = seq(par(l, l),uc);
         s->push(sc);
         break;
     }

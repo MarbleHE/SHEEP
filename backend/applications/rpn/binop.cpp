@@ -41,6 +41,6 @@ void BinOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     s->pop();
     r = s->top();
     s->pop();
-    Circuit combc = seq(bc, par(l, r));
+    Circuit combc = seq(par(l, r),bc);
     s->push(combc);
 }
