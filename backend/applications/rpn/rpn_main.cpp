@@ -13,18 +13,35 @@ vector <int> getLibs();
 
 int main(){
     cout << "Welcome to the HE reverse polish notation calculator powered with SHEEP. Enter your calculation with whitespaces as separator.\n";
-    cout << "Example: ((2 + 3) * (4 + 5)) * 2 written in RPN is 2 3 + 4 5 + * 2 * and should equate to 90." << endl;
+    cout << "Example: ((2 + 3) * -(4 - 5) * 2)^2 written in RPN is  2 3 + 4 5 - -- * 2 * ^2 and should equate to 100." << endl;
+    cout << "Currently the following operations are supported (use the string next to it):" << endl;
+    cout << "Addition +" << endl;
+    cout << "Subtraction -" << endl;
+    cout << "Multiplication *" << endl;
+    cout << "Negation --" << endl;
+    cout << "Square ^2" << endl;
     while (true) {
         string calc = getCalc();
-        Rpn rpn(calc); //maybe instead of isValid() here, put sanity check in constructor and handle with errors and try block
-        vector<int> libs = getLibs();
-        //for (auto x : libs) std::cout << std::to_string(x) << " "; //TODO print selected libraries
-        for (auto x: libs) rpn.calcWith(x);
+        if (calc.empty()) {cout << "Goodbye" << endl; return 0;} //terminate calculator, if no calculation specified.
+        try {
+            Rpn rpn(calc);
+            vector<int> libs = getLibs();
+            try {
+                for (auto x: libs) rpn.calcWith(x);
+            }
+            catch (runtime_error){ //TODO: implement and use different exception, which makes sense
+                cout << "Error: The number of input integers provided does not match the number of inputs required by the operations provided." << endl;
+            }
+            //for (auto x : libs) std::cout << std::to_string(x) << " "; //TODO print selected libraries
+        }
+        catch (invalid_argument){
+            cout << "Error: You entered an unsupported operation, something other than integers as data/library, or your RPN has the wrong format." << endl;
+        }
     }
 }
 
 // get from stdin the calculation in RPN and return as a string.
-//If it is invalid, the user is prompted to retype the calculation.
+// If it is invalid, the user is prompted to retype the calculation.
 string getCalc(){
     string in;
     cout << "\nWrite a new calculation and hit enter: ";
@@ -37,13 +54,14 @@ string getCalc(){
 }
 
 // checks whether a string is a valid calculation in RPN.
+// TODO: implement
 bool isValid(string s){
     return true;
 }
 
 /* gets from stdin the libraries and returns them as integer vector.
 If nothing was specified default is plaintext.
-All invalid inputs will just be ignored.
+All invalid inputs will just be ignored, or an invalid argument error from stoi will be raised.
 */
 vector <int> getLibs(){
     cout << "Select your libraries.\n"

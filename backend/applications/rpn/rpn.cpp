@@ -13,31 +13,28 @@
 #include "token.hpp"
 #include "op.hpp"
 
-enum libs {Plaintext = 0}; //TODO add all
-
 using namespace std;
 using namespace SHEEP;
 
-//Transform to tokens containing ints or ops. Whitespace separator.
+// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
+// Then it composes the Circuit.
 Rpn::Rpn(string calculation){
-   // vector<Token> tokens;
     istringstream iss(calculation);
     string s;
     while (getline(iss, s, ' ')){
         calc.push_back(Token(s));
     }
-   // calc = tokens;
+    composeCircuit();
 }
 
 
-//composes a circuit with the desired library and calculations and runs it.
+//Computes the types for the contexts with minBits, then (with the switch cased templates)
+// constructs the selected contexts and runs the previously composed circuit on them.
 void Rpn::calcWith(int library){
-    composeCircuit();
     inttype mbits = minBits();
-    cout << c;
     switch (library)
     {
-    case Plaintext:
+        case Plaintext:
     {
         //case switch based on minimal number of bits needed for representation of inputs
         switch (mbits)
@@ -59,12 +56,13 @@ void Rpn::calcWith(int library){
     }
 }
 
-//composes a circuit given a library based on the calculation stored in the object.
+//composes a circuit given a calculation stored in the object.
 void Rpn::composeCircuit(){
+    // this stack contains circuits of partial results. Later, they will get combined to a single Circuit using sequential/parallel circuit composition.
     auto *s = new stack<Circuit>;
     for (Token t: calc ){
+        // this virtual function fills up ptvec every time an int is found and if an operation is found, it manipulates the stack s to compose a single circuit
         t.op->handleOp(&ptvec, s);
-        //compose circuit, make all plaintext numbers ciphertexts and put into private array for eval. Or maybe I nee to put them into a mapping int,Wire...?
     }
     // stack should now only contain the final circuit.
     if (s->size() > 1)
@@ -74,6 +72,8 @@ void Rpn::composeCircuit(){
     c = s->top();
     s->pop();
     delete s;
+    cout << "Circuit successfully composed:" << endl;
+    cout << c << endl;
 }
 
 /*minBits determines the minimal required number of bits based on the user input
@@ -108,6 +108,7 @@ inttype Rpn::minBits(){
 }
 
 //TODO: implement as template with intType getting int8_t, int16_t, etc...
+//constructs a plaintext context with the computed inttype and runs it with the Circuit c, providing the ints from ptvec as input.
 void Rpn::plaintext(){
     typedef vector<vector<ContextClear<int16_t>::Plaintext>> PtVec;
 
@@ -124,7 +125,7 @@ void Rpn::plaintext(){
     for (auto x : inputs) cout << to_string(x[0]) << " ";
     cout << endl;
 
-    reverse(inputs.begin(),inputs.end()); //This hack is somehow necessary, as input somehow get inserted in reversed order into the Circuit....?
+    reverse(inputs.begin(),inputs.end()); //This hack is somehow necessary, as input somehow gets inserted in reverse order into the Circuit...
     PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs);
 
     cout << "Sorted result is: ";

@@ -20,9 +20,9 @@ Token::Token (string srep){
     }
     if (binop == binop_map.end() && unop == unop_map.end())
     {
-        op = new IntOp(stoi(rep));
+        op = new IntOp(stoi(rep)); //stoi throws invalid argument on inputs other than ints.
     }
-    
+    //ignore all other tokens, the code should never reach this section anyway
     
 }
 /*

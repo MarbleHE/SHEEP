@@ -7,18 +7,21 @@
 
 using namespace std;
 
+// Constructor
 BinOp::BinOp (binoptype binopt){
     btp = binopt;
 }
 
-
+// This implements the core logic of what to do when a binary operation in a calculation has to processed.
+// It consumes 2 Circuits from the stack and pushes a new one on the stack by feeding
+// them into a new circuit, which implements the computation determined by the operation.
 void BinOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     if (s->size() < 2)
     {
-        throw runtime_error("Stack has not enough input for binary gate.");
+        throw runtime_error("Stack has not enough input for binary gate."); // TODO: implement meaningful error
     }
     
-    Circuit bc;
+    Circuit bc; // generate and select the circuit with the binary operation, which determines the computation
     switch (btp)
     {
     case binoptype::Add:
@@ -41,6 +44,6 @@ void BinOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     s->pop();
     r = s->top();
     s->pop();
-    Circuit combc = seq(par(l, r),bc);
+    Circuit combc = seq(par(l, r),bc); // feed the previous two circuits into this circuit and push on stack.
     s->push(combc);
 }

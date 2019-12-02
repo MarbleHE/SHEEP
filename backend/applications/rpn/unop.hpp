@@ -6,7 +6,7 @@
 #include <stack>
 #include "op.hpp"
 
-//this is just so that we don't have magic strings/numbers
+//The supported unary gates. This makes the switch cases more readable.
 enum class unoptype {
   Negate,
   Square,
@@ -14,20 +14,24 @@ enum class unoptype {
   SquareRoot
 };
 
-//This map is used for matching strings with operations
+//This map is used for matching the Token string with its unary operation type
 static const std::map<std::string, unoptype> unop_map = {
     {"--", unoptype::Negate},
     {"^2", unoptype::Square},
     {"^-1", unoptype::Invert},
     {"^1/2", unoptype::SquareRoot}};
 
+// An UnOp consists of its type, which determines its computation.
 class UnOp: public Op
 {
-private:
-    /* data */
 public:
-    UnOp(unoptype unopt);
+    // constructor
+    explicit UnOp(unoptype unopt);
+    // type of operation
     unoptype utp;
-    void handleOp(std::vector<int> *ptvec, std::stack<Circuit> *s);
+    // This implements the core logic of what to do when a unary operation in a calculation has to processed.
+    // A Circuit a from the stack gets consumed, such that when handleOp returns the Circuit on top is that
+    // Circuit made sequential with the new operation b: a->b
+    void handleOp(std::vector<int> *ptvec, std::stack<Circuit> *s) override;
 };
 

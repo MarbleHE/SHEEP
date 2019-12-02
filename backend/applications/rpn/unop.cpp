@@ -7,10 +7,12 @@
 
 using namespace std;
 
+// Constructor
 UnOp::UnOp(unoptype unopt){
     utp = unopt;
 }
 
+// This implements the core logic of what to do when a unary operation in a calculation has to processed.
 void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     if (s->empty())
     {
@@ -20,29 +22,37 @@ void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     Circuit uc;
     switch (utp)
     {
-    case unoptype::Negate:
+    case unoptype::Negate: // handle negation operation
     {
-        uc = single_unary_gate_circuit(Gate::Negate);
+        uc = single_unary_gate_circuit(Gate::Negate); // generate new circuit uc with negation gate.
         Circuit l;
-        l = s->top();
-        s->pop();
-        Circuit sc = seq(l,uc);
-        s->push(sc);
+        l = s->top(); // get intermediate circuit l from stack
+        s->pop(); // remove it
+        Circuit sc = seq(l,uc); // make sequential circuit from intermediate circuit and new gat circuit: l->uc
+        s->push(sc); // push this as new intermediate circuit on the stack
         break;
     }
-    case unoptype::Square:
+    case unoptype::Square: //handle square operation
     {
-        Circuit spreader;
-        Wire in1 = spreader.add_input("in1");
-        Wire out1 = spreader.add_assignment("out1", Gate::Alias, in1);
-        Wire out2 = spreader.add_assignment("ou2", Gate::Alias, in1);
-        spreader.set_output(out1);
-        spreader.set_output(out2);
+        // generate "duplicator" circuit, so we don't have a mismatch on int inputs and inputs required. Then multiply to square.
+        // Make sequential with previous circuit on stack.
+        // Circuit design:
+        //     in1
+        //     dup
+        //   /     \
+        // out1 * out2
+        //      |
+        Circuit duplicator;
+        Wire in1 = duplicator.add_input("in1");
+        Wire out1 = duplicator.add_assignment("out1", Gate::Alias, in1);
+        Wire out2 = duplicator.add_assignment("ou2", Gate::Alias, in1);
+        duplicator.set_output(out1);
+        duplicator.set_output(out2);
         uc = single_binary_gate_circuit(Gate::Multiply);
         Circuit in;
         in = s->top();
         s->pop();
-        Circuit sc = seq(seq(in, spreader),uc);
+        Circuit sc = seq(seq(in, duplicator),uc);
         s->push(sc);
         break;
     }
