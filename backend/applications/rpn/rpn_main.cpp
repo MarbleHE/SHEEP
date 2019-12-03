@@ -21,7 +21,7 @@ int main(){
     cout << "Negation --" << endl;
     cout << "Square ^2" << endl;
     while (true) {
-        string calc = getCalc();
+        string calc = getCalc(); //TODO: handle out_ofrange exception from stoi
         if (calc.empty()) {cout << "Goodbye" << endl; return 0;} //terminate calculator, if no calculation specified.
         try {
             Rpn rpn(calc);
@@ -65,7 +65,7 @@ All invalid inputs will just be ignored, or an invalid argument error from stoi 
 */
 vector <int> getLibs(){
     cout << "Select your libraries.\n"
-        << "0: plaintext"; //TODO add all libraries.
+        << "0: Plaintext" << endl << "1: HElib_F2"; //TODO add all libraries.
     cout << endl;
     string in;
     vector<int> libs;

@@ -8,7 +8,7 @@ using namespace std;
 using Calculation = vector <Token>;
 
 // This is to switch case based on the libraries selected by the user.
-enum library {Plaintext = 0}; //TODO add all
+enum library {Plaintext = 0, HElib_F2 = 1}; //TODO add all
 
 // This is the return type of minBits to switch case the type of the context template
 enum class inttype {INT_8, INT_16, INT_32, INT_64};
@@ -38,7 +38,11 @@ class Rpn{
          * In the future, this may also estimate how big the Ciphertext type needs to be by looking at circuit depth or similar techniques.
          */
         inttype minBits();
+        // calls evaluate with ContextPlain and case switches intType_t template type on number of bits required
+        void evalPlain(inttype minBits);
+        // calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
+        void evalHElib_F2(inttype minBits);
         /* This template generates a plaintext context and evaluates */
-        void plaintext();
+        template<typename GenericContext, typename intType_t>void eval();
 };
 

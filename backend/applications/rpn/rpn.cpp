@@ -9,6 +9,7 @@
 #include <cmath>
 #include <context.hpp>
 #include <context-clear.hpp>
+#include <context-helib.hpp>
 #include "rpn.hpp"
 #include "token.hpp"
 #include "op.hpp"
@@ -27,29 +28,19 @@ Rpn::Rpn(string calculation){
     composeCircuit();
 }
 
-
 //Computes the types for the contexts with minBits, then (with the switch cased templates)
 // constructs the selected contexts and runs the previously composed circuit on them.
+// This has ugly switch cases, because due to user input, we don't know enough at compile time and can't use templates...
 void Rpn::calcWith(int library){
-    inttype mbits = minBits();
+    inttype ptBits = minBits();
+    // case switch on library
     switch (library)
     {
         case Plaintext:
-    {
-        //case switch based on minimal number of bits needed for representation of inputs
-        switch (mbits)
-        {
-        case inttype::INT_8:
-            plaintext(); //TODO: use template instead
+            evalPlain(ptBits);
             break;
-        case inttype::INT_16:
-            plaintext();
-        default:
-            break;
-        }
-        //set plaintext context
-        break;
-    }
+        case HElib_F2:
+            evalHElib_F2(ptBits);
     default:
         //set plaintext context
         break;
@@ -107,17 +98,66 @@ inttype Rpn::minBits(){
     throw invalid_argument("Integer too large for 64 bits");
 }
 
+void Rpn::evalPlain(inttype minBits){
+    cout << "Constructing Plaintext Context..." << endl;
+    switch (minBits) {
+        // case switch based on minimal number of bits needed for representation of inputs
+        // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
+        // set plaintext context and evaluate c on it
+        case inttype::INT_8:
+            eval<ContextClear<int8_t>, int8_t>();
+            break;
+        case inttype::INT_16:
+            eval<ContextClear<int16_t>, int16_t>();
+            break;
+        case inttype::INT_32:
+            eval<ContextClear<int32_t>, int32_t>();
+            break;
+        case inttype::INT_64:
+            eval<ContextClear<int64_t>, int64_t>();
+        default:
+            break;
+    }
+}
+
+
+void Rpn::evalHElib_F2(inttype minBits){
+    cout << "Constructing HElib_F2 Context..." << endl;
+    switch (minBits) {
+        // case switch based on minimal number of bits needed for representation of inputs
+        // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
+        // set plaintext context and evaluate c on it
+        case inttype::INT_8:
+            eval<ContextHElib_F2<int8_t >, int8_t >();
+            break;
+        case inttype::INT_16:
+            eval<ContextHElib_F2<int16_t>, int16_t>(); //Comment: in example they used uints...
+            break;
+        case inttype::INT_32:
+            eval<ContextHElib_F2<int32_t>, int32_t>();
+            break;
+        case inttype::INT_64:
+            eval<ContextHElib_F2<int32_t>, int32_t>();
+        default:
+            break;
+    }
+}
+
+
 //TODO: implement as template with intType getting int8_t, int16_t, etc...
 //constructs a plaintext context with the computed inttype and runs it with the Circuit c, providing the ints from ptvec as input.
-void Rpn::plaintext(){
-    typedef vector<vector<ContextClear<int16_t>::Plaintext>> PtVec;
+template <typename genericContext, typename intType_t>
+void Rpn::eval(){
+    typedef std::pair<std::vector<std::chrono::duration<double, std::micro> >,
+            std::map<std::string, std::chrono::duration<double, std::micro> > > DurationContainer;
+    typedef vector<vector<intType_t>> PtVec;
 
-    cout << "Constructing context plaintext...\n";
-    ContextClear<int16_t > ctx;  // paramset, bootstrappable
+    genericContext ctx;  // paramset, bootstrappable
+    DurationContainer dc;
 
     PtVec inputs;
     for (int i: ptvec){
-        vector<ContextClear<int16_t >::Plaintext> v = {(ContextClear<int16_t >::Plaintext) i};
+        vector<intType_t> v = {(intType_t) i};
         inputs.push_back(v);
     }
 
@@ -126,9 +166,17 @@ void Rpn::plaintext(){
     cout << endl;
 
     reverse(inputs.begin(),inputs.end()); //This hack is somehow necessary, as input somehow gets inserted in reverse order into the Circuit...
-    PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs);
+    cout << "Evaluating..." << endl;
+    PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs, dc);
 
     cout << "Sorted result is: ";
     for (auto x : sortedPtV) cout << to_string(x[0]) << " ";
     cout << endl;
-    }
+    // Prints timing results. DurationContainer.first saves info about the Circuit, .second about the Gates.
+    cout.setf(ios::fixed, ios::floatfield);
+    cout.setf(ios::showpoint);
+    cout << "Encryption time: " << dc.first[0].count()/1000 << " milliseconds" << endl;
+    cout << "Evaluation time: " << dc.first[1].count()/1000 << " milliseconds" << endl;
+    cout << "Decryption time: " << dc.first[2].count()/1000 << " milliseconds" << endl;
+    cout << endl;
+}
