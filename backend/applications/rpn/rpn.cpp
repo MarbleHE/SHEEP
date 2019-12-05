@@ -9,6 +9,9 @@
 #include <context.hpp>
 #include <context-clear.hpp>
 #include <context-helib.hpp>
+#include <context-lp.hpp>
+//#include <context-palisade.hpp> These didn't install correctly on the local machine (can't be found)
+//#include <context-seal-bfv.hpp>
 #include "rpn.hpp"
 #include "token.hpp"
 #include "op.hpp"
@@ -40,6 +43,22 @@ void Rpn::calcWith(int library){
             break;
         case HElib_F2:
             evalHElib_F2(ptBits);
+            break;
+        case LP:
+            evalLP(ptBits);
+            break;/*  //Import errors on local machine, because local library install doesn't work for SEAL and Palisade...
+        case Palisade:
+            evalPalisade(ptBits);
+            break;
+        case SEAL_BFV:
+            evalSealBFV(ptBits);
+            break;*/
+            /*
+        case SEAL_CKKS:
+            // This would only be useful if we have floats? Do we detect floats in the input and choose SEAL_CKKS automatically?
+        case TFHE:
+             // Lots of options... When do we choose which? Do we choose automatically?
+            */
     default:
         //set plaintext context
         break;
@@ -142,6 +161,72 @@ void Rpn::evalHElib_F2(inttype minBits){
     }
 }
 
+void Rpn::evalLP(inttype minBits){
+    cout << "Constructing LP Context..." << endl;
+    switch (minBits) {
+        // case switch based on minimal number of bits needed for representation of inputs
+        // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
+        // set plaintext context and evaluate c on it
+        case inttype::INT_8:
+            eval<ContextLP<int8_t >, int8_t >();
+            break;
+        case inttype::INT_16:
+            eval<ContextLP<int16_t>, int16_t>(); //Comment: in example they used uints...
+            break;
+        case inttype::INT_32:
+            eval<ContextLP<int32_t>, int32_t>();
+            break;
+        case inttype::INT_64:
+            eval<ContextLP<int32_t>, int32_t>();
+        default:
+            break;
+    }
+}
+/*
+void Rpn::evalPalisade(inttype minBits){
+    cout << "Constructing Palisade Context..." << endl;
+    switch (minBits) {
+        // case switch based on minimal number of bits needed for representation of inputs
+        // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
+        // set plaintext context and evaluate c on it
+        case inttype::INT_8:
+            eval<ContextPalisade<int8_t >, int8_t >();
+            break;
+        case inttype::INT_16:
+            eval<ContextPalisade<int16_t>, int16_t>(); //Comment: in example they used uints...
+            break;
+        case inttype::INT_32:
+            eval<ContextPalisade<int32_t>, int32_t>();
+            break;
+        case inttype::INT_64:
+            eval<ContextPalisade<int32_t>, int32_t>();
+        default:
+            break;
+    }
+}
+
+void Rpn::evalSealBFV(inttype minBits){
+    cout << "Constructing SealBFV Context..." << endl;
+    switch (minBits) {
+        // case switch based on minimal number of bits needed for representation of inputs
+        // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
+        // set plaintext context and evaluate c on it
+        case inttype::INT_8:
+            eval<ContextSealBFV<int8_t >, int8_t >();
+            break;
+        case inttype::INT_16:
+            eval<ContextSealBFV<int16_t>, int16_t>(); //Comment: in example they used uints...
+            break;
+        case inttype::INT_32:
+            eval<ContextSealBFV<int32_t>, int32_t>();
+            break;
+        case inttype::INT_64:
+            eval<ContextSealBFV<int32_t>, int32_t>();
+        default:
+            break;
+    }
+}
+*/
 
 //constructs a plaintext context with the computed inttype and runs it with the Circuit c, providing the ints from ptvec as input.
 template <typename genericContext, typename intType_t>

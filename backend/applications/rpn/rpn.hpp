@@ -8,7 +8,7 @@ using namespace std;
 using Calculation = vector <Token>;
 
 // This is to switch case based on the libraries selected by the user.
-enum library {Plaintext = 0, HElib_F2 = 1}; //TODO add all
+enum library {Plaintext = 0, HElib_F2 = 1, LP = 2/*, Palisade = 3, SealBFV = 4*/}; //TODO add all
 
 // This is the return type of minBits to switch case the type of the context template
 enum class inttype {INT_8, INT_16, INT_32, INT_64};
@@ -42,6 +42,12 @@ class Rpn{
         void evalPlain(inttype minBits);
         // calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
         void evalHElib_F2(inttype minBits);
+        // calls evaluate with ContextLP and case switches intType_t template type on number of bits required
+        void evalLP(inttype minBits);
+        // calls evaluate with ContextPalisade and case switches intType_t template type on number of bits required
+        void evalPalisade(inttype minBits);
+        // calls evaluate with ContextSealBFV and case switches intType_t template type on number of bits required
+        void evalSealBFV(inttype minBits);
         /* This template generates a plaintext context and evaluates */
         template<typename GenericContext, typename intType_t>void eval();
 };

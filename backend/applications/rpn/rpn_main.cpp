@@ -65,7 +65,7 @@ All invalid inputs will just be ignored, or an invalid argument error from stoi 
 */
 vector <int> getLibs(){
     cout << "Select your libraries.\n"
-        << "0: Plaintext" << endl << "1: HElib_F2"; //TODO add all libraries.
+        << "0: Plaintext" << endl << "1: HElib_F2" << endl << "2: LP"/* << endl << "3: Palisade" << endl << "4: SealBFV"*/; //TODO add all libraries.
     cout << endl;
     string in;
     vector<int> libs;
