@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <string>
 #include <istream>
 #include <sstream>
@@ -125,7 +124,6 @@ void Rpn::plaintext(){
     for (auto x : inputs) cout << to_string(x[0]) << " ";
     cout << endl;
 
-    reverse(inputs.begin(),inputs.end()); //This hack is somehow necessary, as input somehow gets inserted in reverse order into the Circuit...
     PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs);
 
     cout << "Sorted result is: ";
