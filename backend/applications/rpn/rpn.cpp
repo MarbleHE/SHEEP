@@ -143,7 +143,6 @@ void Rpn::evalHElib_F2(inttype minBits){
 }
 
 
-//TODO: implement as template with intType getting int8_t, int16_t, etc...
 //constructs a plaintext context with the computed inttype and runs it with the Circuit c, providing the ints from ptvec as input.
 template <typename genericContext, typename intType_t>
 void Rpn::eval(){
@@ -165,7 +164,7 @@ void Rpn::eval(){
     cout << endl;
 
     cout << "Evaluating..." << endl;
-    PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs);
+    PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs, dc);
 
     cout << "Sorted result is: ";
     for (auto x : sortedPtV) cout << to_string(x[0]) << " ";
