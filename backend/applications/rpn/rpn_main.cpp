@@ -21,7 +21,7 @@ int main(){
     cout << "Negation --" << endl;
     cout << "Square ^2" << endl;
     while (true) {
-        string calc = getCalc(); //TODO: handle out_ofrange exception from stoi
+        string calc = getCalc(); //TODO: handle out_of_range exception from stoi
         if (calc.empty()) {cout << "Goodbye" << endl; return 0;} //terminate calculator, if no calculation specified.
         try {
             Rpn rpn(calc);
@@ -30,11 +30,11 @@ int main(){
                 for (auto x: libs) rpn.calcWith(x);
             }
             catch (runtime_error){ //TODO: implement and use different exception, which makes sense
-                cout << "Error: The number of input integers provided does not match the number of inputs required by the operations provided." << endl;
+                cout << "Error: The number of input integers provided does not match the number of inputs required by the operations provided, or the gate is not implemented." << endl;
             }
             //for (auto x : libs) std::cout << std::to_string(x) << " "; //TODO print selected libraries
         }
-        catch (invalid_argument){
+        catch (runtime_error){ //TODO: catch meaningful stuff only, output meaningful message.
             cout << "Error: You entered an unsupported operation, something other than integers as data/library, or your RPN has the wrong format." << endl;
         }
     }

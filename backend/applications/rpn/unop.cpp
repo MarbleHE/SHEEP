@@ -13,8 +13,8 @@ UnOp::UnOp(unoptype unopt){
 }
 
 // This implements the core logic of what to do when a unary operation in a calculation has to processed.
-void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
-    if (s->empty())
+void UnOp::handleOp(vector<int> &ptvec, stack<Circuit> &s){
+    if (s.empty())
     {
         throw runtime_error("Stack has not enough input for unary gate.");
     }
@@ -26,16 +26,17 @@ void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
     {
         uc = single_unary_gate_circuit(Gate::Negate); // generate new circuit uc with negation gate.
         Circuit l;
-        l = s->top(); // get intermediate circuit l from stack
-        s->pop(); // remove it
+        l = s.top(); // get intermediate circuit l from stack
+        s.pop(); // remove it
         Circuit sc = seq(l,uc); // make sequential circuit from intermediate circuit and new gat circuit: l->uc
-        s->push(sc); // push this as new intermediate circuit on the stack
+        s.push(sc); // push this as new intermediate circuit on the stack
         break;
     }
     case unoptype::Square: //handle square operation
     {
         // generate "duplicator" circuit, so we don't have a mismatch on int inputs and inputs required. Then multiply to square.
         // Make sequential with previous circuit on stack.
+        // This would be nice to integrate int circuit-util.hpp
         // Circuit design:
         //     in1
         //     dup
@@ -50,10 +51,10 @@ void UnOp::handleOp(vector<int> *ptvec, stack<Circuit> *s){
         duplicator.set_output(out2);
         uc = single_binary_gate_circuit(Gate::Multiply);
         Circuit in;
-        in = s->top();
-        s->pop();
+        in = s.top();
+        s.pop();
         Circuit sc = seq(seq(in, duplicator),uc);
-        s->push(sc);
+        s.push(sc);
         break;
     }
     /*case unoptype::SquareRoot:

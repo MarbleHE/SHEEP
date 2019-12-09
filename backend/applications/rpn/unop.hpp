@@ -32,6 +32,6 @@ public:
     // This implements the core logic of what to do when a unary operation in a calculation has to processed.
     // A Circuit a from the stack gets consumed, such that when handleOp returns the Circuit on top is that
     // Circuit made sequential with the new operation b: a->b
-    void handleOp(std::vector<int> *ptvec, std::stack<Circuit> *s) override;
+    void handleOp(std::vector<int> &ptvec, std::stack<Circuit> &s) override;
 };
 

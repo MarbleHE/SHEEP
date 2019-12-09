@@ -3,7 +3,6 @@
 #include <sstream>
 #include <stack>
 #include <vector>
-#include <vector>
 #include <memory>
 #include <cmath>
 #include <context.hpp>
@@ -68,19 +67,18 @@ void Rpn::calcWith(int library){
 //composes a circuit given a calculation stored in the object.
 void Rpn::composeCircuit(){
     // this stack contains circuits of partial results. Later, they will get combined to a single Circuit using sequential/parallel circuit composition.
-    auto *s = new stack<Circuit>;
+    stack<Circuit> s;
     for (Token t: calc ){
         // this virtual function fills up ptvec every time an int is found and if an operation is found, it manipulates the stack s to compose a single circuit
-        t.op->handleOp(&ptvec, s);
+        t.op->handleOp(ptvec, s);
     }
     // stack should now only contain the final circuit.
-    if (s->size() > 1)
+    if (s.size() > 1)
     {
         throw runtime_error("More than one Circuit remains in stack. Either the RPN was illegal, or Circuit composition failed.");
     }
-    c = s->top();
-    s->pop();
-    delete s;
+    c = s.top();
+    s.pop();
     cout << "Circuit successfully composed:" << endl;
     cout << c << endl;
 }
@@ -161,6 +159,7 @@ void Rpn::evalHElib_F2(inttype minBits){
     }
 }
 
+// Comment: Paillier cryptosystem does not support Gates other than addition.
 void Rpn::evalLP(inttype minBits){
     cout << "Constructing LP Context..." << endl;
     switch (minBits) {
