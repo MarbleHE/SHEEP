@@ -1,6 +1,5 @@
 #include <string>
 #include <istream>
-#include <sstream>
 #include <stack>
 #include <vector>
 #include <memory>

@@ -6,7 +6,6 @@
 #include "circuit.hpp"
 #include "op.hpp"
 
-using namespace std;
 
 //The supported binary gates. This makes the switch cases more readable.
 enum class binoptype {
@@ -34,5 +33,5 @@ public:
     // This implements the core logic of what to do when a binary operation in a calculation has to processed.
     // It consumes 2 Circuits from the stack and pushes a new one on the stack by feeding
     // them into a new circuit, which implements the computation determined by the operation.
-    void handleOp(vector<int> &ptvec, stack<Circuit> &s) override;
+    void handleOp(std::vector<int> &ptvec, std::stack<Circuit> &s) override;
 };

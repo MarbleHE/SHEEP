@@ -22,7 +22,8 @@ int main(){
     cout << "Square ^2" << endl;
     while (true) {
         string calc = getCalc(); //TODO: handle out_of_range exception from stoi
-        if (calc.empty()) {cout << "Goodbye" << endl; return 0;} //terminate calculator, if no calculation specified.
+        if (calc == "q") {cout << "Goodbye" << endl; return 0;} // terminate calculator.
+        if (calc.empty())  {cout << "No calculation specified. Using example calculation 2 3 + 4 5 - -- * 2 * ^2." << endl; calc = "2 3 + 4 5 - -- * 2 * ^2";} // standard demo calculation.
         try {
             Rpn rpn(calc);
             vector<int> libs = getLibs();
