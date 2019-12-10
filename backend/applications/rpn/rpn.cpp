@@ -17,9 +17,10 @@
 using namespace std;
 using namespace SHEEP;
 
-// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
-// Then it composes the Circuit.
-Rpn::Rpn(string calculation){
+/// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
+/// Then it composes the Circuit and fills ptvec by calling composeCircuit.
+/// \param calculation RPN calculation as a raw string provided by the user
+Rpn::Rpn(const string& calculation){
     istringstream iss(calculation);
     string s;
     while (getline(iss, s, ' ')){
@@ -28,9 +29,10 @@ Rpn::Rpn(string calculation){
     composeCircuit();
 }
 
-//Computes the types for the contexts with minBits, then (with the switch cased templates)
-// constructs the selected contexts and runs the previously composed circuit on them.
-// This has ugly switch cases, because due to user input, we don't know enough at compile time and can't use templates...
+/// Computes the types for the contexts with minBits, then (with the switch cased templates)
+/// constructs the selected contexts and runs the previously composed circuit on them.
+/// This has ugly switch cases, because due to user input, we don't know enough at compile time and can't use templates...
+/// \param library The library to evaluate the circuit with.
 void Rpn::calcWith(int library){
     inttype ptBits = minBits();
     // case switch on library
@@ -58,17 +60,17 @@ void Rpn::calcWith(int library){
              // Lots of options... When do we choose which? Do we choose automatically?
             */
     default:
-        //set plaintext context
         break;
     }
 }
 
-//composes a circuit given a calculation stored in the object.
+/// Composes a circuit given a calculation stored in the object in calc.
+/// It also fills ptvec.
 void Rpn::composeCircuit(){
     // this stack contains circuits of partial results. Later, they will get combined to a single Circuit using sequential/parallel circuit composition.
     stack<Circuit> s;
     for (Token t: calc ){
-        // this virtual function fills up ptvec every time an int is found and if an operation is found, it manipulates the stack s to compose a single circuit
+        // this virtual function fills up ptvec every time an int is found and if an operation is found, it manipulates the stack s to gradually compose a single circuit
         t.op->handleOp(ptvec, s);
     }
     // stack should now only contain the final circuit.
@@ -82,12 +84,12 @@ void Rpn::composeCircuit(){
     cout << c << endl;
 }
 
-/*minBits determines the minimal required number of bits based on the user input
-It is a very easy implementation, assuming no overflow happens in the circuit.
-The only thing checked is whether an encoding of each plaintext is possible.
-In the future one could expand this such that it is possible to
-estimate size of the result and therefore set the CipherText size in the context.
-*/
+/// minBits determines the minimal required number of bits based on the user input
+/// It is a very easy implementation, assuming no overflow happens in the circuit.
+/// The only thing checked is whether an encoding of each plaintext is possible.
+/// In the future one could expand this such that it is possible to
+/// estimate size of the result and therefore set the CipherText size in the context.
+/// \return inttype which is at least required to represent the biggest integer in the calculation (in ptvec)
 inttype Rpn::minBits(){
     int cmax = 0;
     for (int i: ptvec){
@@ -113,6 +115,8 @@ inttype Rpn::minBits(){
     throw invalid_argument("Integer too large for 64 bits");
 }
 
+/// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
+/// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
 void Rpn::evalPlain(inttype minBits){
     cout << "Constructing Plaintext Context..." << endl;
     switch (minBits) {
@@ -135,7 +139,8 @@ void Rpn::evalPlain(inttype minBits){
     }
 }
 
-
+/// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
+/// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
 void Rpn::evalHElib_F2(inttype minBits){
     cout << "Constructing HElib_F2 Context..." << endl;
     switch (minBits) {
@@ -158,7 +163,9 @@ void Rpn::evalHElib_F2(inttype minBits){
     }
 }
 
-// Comment: Paillier cryptosystem does not support Gates other than addition.
+/// Note: Paillier cryptosystem does not support Gates other than addition.
+/// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
+/// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
 void Rpn::evalLP(inttype minBits){
     cout << "Constructing LP Context..." << endl;
     switch (minBits) {
@@ -226,7 +233,7 @@ void Rpn::evalSealBFV(inttype minBits){
 }
 */
 
-//constructs a plaintext context with the computed inttype and runs it with the Circuit c, providing the ints from ptvec as input.
+/// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
 template <typename genericContext, typename intType_t>
 void Rpn::eval(){
     typedef std::pair<std::vector<std::chrono::duration<double, std::micro> >,
@@ -237,7 +244,7 @@ void Rpn::eval(){
     DurationContainer dc;
 
     PtVec inputs;
-    for (int i: ptvec){
+    for (auto i: ptvec){
         vector<intType_t> v = {(intType_t) i};
         inputs.push_back(v);
     }

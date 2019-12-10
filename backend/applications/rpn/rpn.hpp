@@ -4,50 +4,75 @@
 #include <map>
 #include "token.hpp"
 
+/// A Calculation is simply a vector of Tokens
 using Calculation = std::vector <Token>;
 
-// This is to switch case based on the libraries selected by the user.
+/// Libraries which can be selected by the user.
 enum library {Plaintext = 0, HElib_F2 = 1, LP = 2/*, Palisade = 3, SealBFV = 4*/}; //TODO add all
 
-// This is the return type of minBits to switch case the type of the context template
+/// Integer types to select integer types required by contexts, depends on minimal required input size and is case switched on
 enum class inttype {INT_8, INT_16, INT_32, INT_64};
 
-/*This is a representation of the calculator. It is initialized by the String input which gets transformed
-    at construction to to Tokens containing the operations. The circuit composition happens lazily when a
-    calculation with a specified library is requested.
-*/
+/// This is a representation of the RPN calculator. It is initialized by the String input which gets transformed
+/// at construction to Tokens containing the operations of the calculation. The circuit composition happens eagerly when an Rpn object is constructed.
+/// A calculation can be evaluated with calcWith, given a library from the enum class. The inputs are stored in ptvec, which happens eagerly at construction of an Rpn object.
 class Rpn{
     public:
-        // Constructor
-        explicit Rpn(std::string calculation);
-        // Computes the the evaluation of circuit c on a context determined by @param library.
+        /// Constructor fills up Circuit c and ptvec by calling composeCircuit
+        /// \param calculation RPN calculation as a raw string provided by the user
+        explicit Rpn(const std::string& calculation);
+
+        /// Computes the the evaluation of circuit c on a context determined by library on the inputs stored in ptvec.
+        /// \param library The library to evaluate the circuit with.
         void calcWith(int library);
+
     private:
-        // A calculation is a vector of Tokens. Tokens consist of their string representation and their abstract operation IntOp, UnOp or BinOp.
+        //// Data
+
+        /// A calculation is a vector of Tokens. Tokens consist of their string representation and their abstract operation IntOp, UnOp or BinOp.
         Calculation calc;
-        /* This function composes the circuit by processing the calculation from left to right and manipulating a Circuit stack.
-         * When the end of the calculation is reached, the stack should contain the final circuit, which gets put into c.*/
-        void composeCircuit();
-        // The final Circuit translated from the calculation.
+
+        /// The final Circuit composed from the calculation provided by the user.
         Circuit c;
-        // All integer inputs from the calculation. They will all be encrypted and fed into the circuit.
+
+        /// All integer inputs from the calculation. They will all be encrypted and fed into the circuit.
         std::vector<int> ptvec;
-        /* This function calculates the minimal amount of bits required to represent the biggest input integer to instantiate
-         * the Plaintext type of the context.
-         * In the future, this may also estimate how big the Ciphertext type needs to be by looking at circuit depth or similar techniques.
-         */
+
+        //// Helpers
+
+        /// This function composes the circuit by processing the calculation from left to right and manipulating a Circuit stack.
+        /// When the end of the calculation is reached, the stack should contain the final circuit, which gets put into c.
+        void composeCircuit();
+
+        /// This function calculates the minimal amount of bits required to represent the biggest input integer to instantiate
+        /// the Plaintext type of the context.
+        /// In the future, this may also estimate how big the Ciphertext type needs to be by looking at circuit depth or similar techniques.
+        /// \return inttype which is at least required to represent the biggest integer in the calculation (in ptvec)
         inttype minBits();
-        // calls evaluate with ContextPlain and case switches intType_t template type on number of bits required
+
+        //// Evaluate functions
+
+        /// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
+        /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalPlain(inttype minBits);
-        // calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
+
+        /// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
+        /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalHElib_F2(inttype minBits);
-        // calls evaluate with ContextLP and case switches intType_t template type on number of bits required
+
+        /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
+        /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalLP(inttype minBits);
-        // calls evaluate with ContextPalisade and case switches intType_t template type on number of bits required
+/* I left this out, because of some local import errors with these libraries...
+        /// calls evaluate with ContextPalisade and case switches intType_t template type on number of bits required
+        /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalPalisade(inttype minBits);
-        // calls evaluate with ContextSealBFV and case switches intType_t template type on number of bits required
+
+        /// calls evaluate with ContextSealBFV and case switches intType_t template type on number of bits required
+        /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalSealBFV(inttype minBits);
-        /* This template generates a plaintext context and evaluates */
+*/
+        /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
         template<typename GenericContext, typename intType_t>void eval();
 };
 

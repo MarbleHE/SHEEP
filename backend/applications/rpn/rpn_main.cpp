@@ -8,7 +8,7 @@
 using namespace std;
 
 string getCalc();
-bool isValid(string s);
+bool isValid(const string& s);
 vector <int> getLibs();
 
 int main(){
@@ -41,8 +41,8 @@ int main(){
     }
 }
 
-// get from stdin the calculation in RPN and return as a string.
-// If it is invalid, the user is prompted to retype the calculation.
+/// get from stdin the calculation in RPN and return as a string.
+/// If it is invalid, the user is prompted to retype the calculation.
 string getCalc(){
     string in;
     cout << "\nWrite a new calculation and hit enter: ";
@@ -54,16 +54,18 @@ string getCalc(){
     return in;
 }
 
-// checks whether a string is a valid calculation in RPN.
-// TODO: implement
-bool isValid(string s){
+/// checks whether a string is a valid calculation in RPN.
+/// TODO: implement
+/// \param s string containing a calculation to be checked for validity
+/// \return true if string is valid in RPN, false otherwise
+bool isValid(const string& s){
     return true;
 }
 
-/* gets from stdin the libraries and returns them as integer vector.
-If nothing was specified default is plaintext.
-All invalid inputs will just be ignored, or an invalid argument error from stoi will be raised.
-*/
+/// gets from stdin the libraries and returns them as integer vector.
+/// If nothing was specified default is plaintext.
+/// All invalid inputs will just be ignored, or an invalid argument error from stoi will be raised.
+/// \return vector containing user selected libraries as integers
 vector <int> getLibs(){
     cout << "Select your libraries.\n"
         << "0: Plaintext" << endl << "1: HElib_F2" << endl << "2: LP"/* << endl << "3: Palisade" << endl << "4: SealBFV"*/; //TODO add all libraries.
