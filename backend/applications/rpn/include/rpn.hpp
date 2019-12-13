@@ -8,7 +8,7 @@
 using Calculation = std::vector <Token>;
 
 /// Libraries which can be selected by the user.
-enum library {Plaintext = 0, HElib_F2 = 1, LP = 2 , Palisade = 3, SealBFV = 4}; //TODO add all
+enum library {Plaintext = 0, HElib_F2 = 1, LP = 2 , Palisade = 3, SealBFV = 4, SealCCKS = 5, TFHE = 6};
 
 /// Integer types to select integer types required by contexts, depends on minimal required input size and is case switched on
 enum class inttype {INT_8, INT_16, INT_32, INT_64};
