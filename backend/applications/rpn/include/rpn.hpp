@@ -26,6 +26,11 @@ public:
     /// \param calculation RPN calculation as a raw string provided by the user
     explicit Rpn(const std::string &calculation);
 
+    /// Creates empty circuit
+    Rpn() = default;
+
+    //TODO: Check rule of zero/3/5/whatever
+
     /// Computes the the evaluation of circuit c on a context determined by library on the inputs stored in ptvec.
     /// \param library The library to evaluate the circuit with.
     void calcWith(int library);

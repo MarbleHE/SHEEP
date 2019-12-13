@@ -197,7 +197,7 @@ void Rpn::evalHElib_F2(inttype minBits){
 #endif
 
 #ifdef HAVE_LP
-/// Note: Paillier cryptosystem does not support Gates other than addition.
+/// N.B. Paillier cryptosystem does not support Gates other than addition.
 /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
 void Rpn::evalLP(inttype minBits){
@@ -295,7 +295,8 @@ void Rpn::eval() {
     cout << "Evaluating..." << endl;
     PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs, dc);
 
-    cout << "Sorted result is: ";
+    //TODO: Eval should probably return a string or a numeric type
+    cout << "Result is: ";
     for (auto x : sortedPtV) cout << to_string(x[0]) << " ";
     cout << endl;
     // Prints timing results. DurationContainer.first saves info about the Circuit, .second about the Gates.

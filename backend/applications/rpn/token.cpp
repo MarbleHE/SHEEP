@@ -22,7 +22,8 @@ Token::Token(string srep) {
         op = new UnOp(unop->second);
     }
     if (binop == binop_map.end() && unop == unop_map.end()) {
-        op = new IntOp(stoi(rep)); //stoi throws invalid argument on inputs other than ints.
+        // TODO: Check for empty string
+        op = new IntOp(stoi(rep)); //TODO: Catch exception, stoi throws invalid argument on inputs other than ints.
     }
     //ignore all other tokens, the code should never reach this section anyway
 
