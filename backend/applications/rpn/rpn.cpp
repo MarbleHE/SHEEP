@@ -40,7 +40,6 @@ using namespace SHEEP;
 #include "include/op.hpp"
 
 
-
 /// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
 /// Then it composes the Circuit and fills ptvec by calling composeCircuit.
 /// \param calculation RPN calculation as a raw string provided by the user
@@ -95,24 +94,24 @@ void Rpn::calcWith(int library) {
              // Lots of options... When do we choose which? Do we choose automatically?
              break;
 #endif
-    default:
-        break;
+        default:
+            break;
     }
 }
 
 /// Composes a circuit given a calculation stored in the object in calc.
 /// It also fills ptvec.
-void Rpn::composeCircuit(){
+void Rpn::composeCircuit() {
     // this stack contains circuits of partial results. Later, they will get combined to a single Circuit using sequential/parallel circuit composition.
     stack<Circuit> s;
-    for (Token t: calc ){
+    for (Token t: calc) {
         // this virtual function fills up ptvec every time an int is found and if an operation is found, it manipulates the stack s to gradually compose a single circuit
         t.op->handleOp(ptvec, s);
     }
     // stack should now only contain the final circuit.
-    if (s.size() > 1)
-    {
-        throw runtime_error("More than one Circuit remains in stack. Either the RPN was illegal, or Circuit composition failed.");
+    if (s.size() > 1) {
+        throw runtime_error(
+                "More than one Circuit remains in stack. Either the RPN was illegal, or Circuit composition failed.");
     }
     c = s.top();
     s.pop();
@@ -126,26 +125,22 @@ void Rpn::composeCircuit(){
 /// In the future one could expand this such that it is possible to
 /// estimate size of the result and therefore set the CipherText size in the context.
 /// \return inttype which is at least required to represent the biggest integer in the calculation (in ptvec)
-inttype Rpn::minBits(){
+inttype Rpn::minBits() {
     int cmax = 0;
-    for (int i: ptvec){
-        cmax = max(cmax,abs(i));
+    for (int i: ptvec) {
+        cmax = max(cmax, abs(i));
     }
     int n_bits = (int) ceil(log(cmax));
-    if (n_bits < 8)
-    {
+    if (n_bits < 8) {
         return inttype::INT_8;
     }
-    if (n_bits < 16)
-    {
+    if (n_bits < 16) {
         return inttype::INT_16;
     }
-    if (n_bits < 32)
-    {
+    if (n_bits < 32) {
         return inttype::INT_32;
     }
-    if (n_bits < 64)
-    {
+    if (n_bits < 64) {
         return inttype::INT_64;
     }
     throw invalid_argument("Integer too large for 64 bits");
@@ -153,7 +148,7 @@ inttype Rpn::minBits(){
 
 /// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-void Rpn::evalPlain(inttype minBits){
+void Rpn::evalPlain(inttype minBits) {
     cout << "Constructing Plaintext Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
@@ -278,8 +273,8 @@ void Rpn::evalSealBFV(inttype minBits){
 #endif
 
 /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
-template <typename genericContext, typename intType_t>
-void Rpn::eval(){
+template<typename genericContext, typename intType_t>
+void Rpn::eval() {
     typedef std::pair<std::vector<std::chrono::duration<double, std::micro> >,
             std::map<std::string, std::chrono::duration<double, std::micro> > > DurationContainer;
     typedef vector<vector<intType_t>> PtVec;
@@ -288,7 +283,7 @@ void Rpn::eval(){
     DurationContainer dc;
 
     PtVec inputs;
-    for (auto i: ptvec){
+    for (auto i: ptvec) {
         vector<intType_t> v = {(intType_t) i};
         inputs.push_back(v);
     }
@@ -306,8 +301,8 @@ void Rpn::eval(){
     // Prints timing results. DurationContainer.first saves info about the Circuit, .second about the Gates.
     cout.setf(ios::fixed, ios::floatfield);
     cout.setf(ios::showpoint);
-    cout << "Encryption time: " << dc.first[0].count()/1000 << " milliseconds" << endl;
-    cout << "Evaluation time: " << dc.first[1].count()/1000 << " milliseconds" << endl;
-    cout << "Decryption time: " << dc.first[2].count()/1000 << " milliseconds" << endl;
+    cout << "Encryption time: " << dc.first[0].count() / 1000 << " milliseconds" << endl;
+    cout << "Evaluation time: " << dc.first[1].count() / 1000 << " milliseconds" << endl;
+    cout << "Decryption time: " << dc.first[2].count() / 1000 << " milliseconds" << endl;
     cout << endl;
 }

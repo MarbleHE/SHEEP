@@ -9,22 +9,21 @@
 
 /// The supported binary gates. This makes the switch cases more readable.
 enum class binoptype {
-  Add,
-  Subtract,
-  Multiply,
-  Divide
+    Add,
+    Subtract,
+    Multiply,
+    Divide
 };
 
 /// This map is used for matching the Token string with its binary operation type
 static const std::map<std::string, binoptype> binop_map = {
-    {"-", binoptype::Subtract},
-    {"+", binoptype::Add},
-    {"*", binoptype::Multiply},
-    {"/", binoptype::Divide}};
+        {"-", binoptype::Subtract},
+        {"+", binoptype::Add},
+        {"*", binoptype::Multiply},
+        {"/", binoptype::Divide}};
 
 /// A BinOp consists of its type, which determines the computation (the gate)
-class BinOp: public Op
-{
+class BinOp : public Op {
 public:
     /// Constructor
     /// \param binopt The type of operation (the gate). Gets copied into btp.

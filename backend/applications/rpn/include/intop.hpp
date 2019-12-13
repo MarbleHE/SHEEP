@@ -6,8 +6,7 @@
 #include "op.hpp"
 
 /// An integer operation IntOp is just an integer. This means an alias gate as placeholder and the integer is stored in ptvec to later feed it into the circuit.
-class IntOp: public Op
-{
+class IntOp : public Op {
 public:
     /// Constructor
     /// \param in The integer. An Integer operation is just an integer.

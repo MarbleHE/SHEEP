@@ -6,8 +6,7 @@
 
 /// Abstract Base class of an operation. Cannot be instantiated, but in the Token class the subclass objects can be accessed via pointer.
 /// With handleOp, we can use dynamic binding to iterate through a heterogeneous vector.
-class Op
-{
+class Op {
 private:
 public:
     /// This implements the core logic of what to do when an operation in a calculation has to processed.

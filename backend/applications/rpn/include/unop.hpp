@@ -8,22 +8,21 @@
 
 /// The supported unary gates. This makes the switch cases more readable.
 enum class unoptype {
-  Negate,
-  Square,
-  Invert,
-  SquareRoot
+    Negate,
+    Square,
+    Invert,
+    SquareRoot
 };
 
 /// This map is used for matching the Token string with its unary operation type.
 static const std::map<std::string, unoptype> unop_map = {
-    {"--", unoptype::Negate},
-    {"^2", unoptype::Square},
-    {"^-1", unoptype::Invert},
-    {"^1/2", unoptype::SquareRoot}};
+        {"--",   unoptype::Negate},
+        {"^2",   unoptype::Square},
+        {"^-1",  unoptype::Invert},
+        {"^1/2", unoptype::SquareRoot}};
 
 /// An UnOp consists of its type, which determines its computation (its gate)
-class UnOp: public Op
-{
+class UnOp : public Op {
 public:
     /// Constructor
     /// \param unopt type of the operation (the gate)
