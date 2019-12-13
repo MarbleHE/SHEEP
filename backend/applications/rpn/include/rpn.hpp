@@ -8,7 +8,7 @@
 using Calculation = std::vector <Token>;
 
 /// Libraries which can be selected by the user.
-enum library {Plaintext = 0, HElib_F2 = 1, LP = 2/*, Palisade = 3, SealBFV = 4*/}; //TODO add all
+enum library {Plaintext = 0, HElib_F2 = 1, LP = 2 , Palisade = 3, SealBFV = 4}; //TODO add all
 
 /// Integer types to select integer types required by contexts, depends on minimal required input size and is case switched on
 enum class inttype {INT_8, INT_16, INT_32, INT_64};
@@ -56,22 +56,30 @@ class Rpn{
         /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalPlain(inttype minBits);
 
+#ifdef HAVE_HElib
         /// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
         /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalHElib_F2(inttype minBits);
+#endif
 
+#ifdef HAVE_LP
         /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
         /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalLP(inttype minBits);
-/* I left this out, because of some local import errors with these libraries...
+#endif
+
+#ifdef HAVE_PALISADE
         /// calls evaluate with ContextPalisade and case switches intType_t template type on number of bits required
         /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalPalisade(inttype minBits);
 
+#endif
+
+#ifdef HAVE_SEAL_BFV
         /// calls evaluate with ContextSealBFV and case switches intType_t template type on number of bits required
         /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
         void evalSealBFV(inttype minBits);
-*/
+#endif
         /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
         template<typename GenericContext, typename intType_t>void eval();
 };

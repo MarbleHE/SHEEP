@@ -1,29 +1,51 @@
 #include <string>
 #include <istream>
+#include <iostream>
 #include <stack>
 #include <vector>
 #include <memory>
 #include <cmath>
-#include <context.hpp>
-#include <context-clear.hpp>
-#include <context-helib.hpp>
-#include <context-lp.hpp>
-//#include <context-palisade.hpp> These didn't install correctly on the local machine (can't be found)
-//#include <context-seal-bfv.hpp>
-#include "rpn.hpp"
-#include "token.hpp"
-#include "op.hpp"
 
 using namespace std;
+
+#include "context.hpp"
+#include "context-clear.hpp"
+
+#ifdef HAVE_HElib
+#include "context-helib.hpp"
+#endif
+
+#ifdef HAVE_LP
+#include "context-lp.hpp"
+#endif
+
+#ifdef HAVE_PALISADE
+#include "context-palisade.hpp"
+#endif
+
+#ifdef HAVE_SEAL_BFV
+#include "context-seal-bfv.hpp"
+#endif
+
+#ifdef HAVE_SEAL_CKKS
+#include "context-seal-ckks.hpp"
+#endif
+
 using namespace SHEEP;
+
+#include "include/rpn.hpp"
+#include "include/token.hpp"
+#include "include/op.hpp"
+
+
 
 /// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
 /// Then it composes the Circuit and fills ptvec by calling composeCircuit.
 /// \param calculation RPN calculation as a raw string provided by the user
-Rpn::Rpn(const string& calculation){
+Rpn::Rpn(const string &calculation) {
     istringstream iss(calculation);
     string s;
-    while (getline(iss, s, ' ')){
+    while (getline(iss, s, ' ')) {
         calc.push_back(Token(s));
     }
     composeCircuit();
@@ -33,32 +55,44 @@ Rpn::Rpn(const string& calculation){
 /// constructs the selected contexts and runs the previously composed circuit on them.
 /// This has ugly switch cases, because due to user input, we don't know enough at compile time and can't use templates...
 /// \param library The library to evaluate the circuit with.
-void Rpn::calcWith(int library){
+void Rpn::calcWith(int library) {
     inttype ptBits = minBits();
     // case switch on library
-    switch (library)
-    {
+    switch (library) {
         case Plaintext:
             evalPlain(ptBits);
             break;
+//TODO: Is there a better solution for this?
+#ifdef HAVE_HElib
         case HElib_F2:
             evalHElib_F2(ptBits);
             break;
+#endif
+#ifdef HAVE_LP
         case LP:
             evalLP(ptBits);
-            break;/*  //Import errors on local machine, because local library install doesn't work for SEAL and Palisade...
+            break;
+#endif
+#ifdef  HAVE_PALISADE
         case Palisade:
             evalPalisade(ptBits);
             break;
+#endif
+#ifdef HAVE_SEAL_BFV
         case SEAL_BFV:
             evalSealBFV(ptBits);
-            break;*/
-            /*
+            break;
+#endif
+#ifdef HAVE_SEAL_CKKS
         case SEAL_CKKS:
             // This would only be useful if we have floats? Do we detect floats in the input and choose SEAL_CKKS automatically?
+            break;
+#endif
+#ifdef  HAVE_TFHE
         case TFHE:
              // Lots of options... When do we choose which? Do we choose automatically?
-            */
+             break;
+#endif
     default:
         break;
     }
@@ -139,6 +173,7 @@ void Rpn::evalPlain(inttype minBits){
     }
 }
 
+#ifdef HAVE_HElib
 /// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
 void Rpn::evalHElib_F2(inttype minBits){
@@ -162,7 +197,9 @@ void Rpn::evalHElib_F2(inttype minBits){
             break;
     }
 }
+#endif
 
+#ifdef HAVE_LP
 /// Note: Paillier cryptosystem does not support Gates other than addition.
 /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
@@ -187,7 +224,10 @@ void Rpn::evalLP(inttype minBits){
             break;
     }
 }
-/*
+#endif
+
+
+#ifdef HAVE_PALISADE
 void Rpn::evalPalisade(inttype minBits){
     cout << "Constructing Palisade Context..." << endl;
     switch (minBits) {
@@ -209,7 +249,9 @@ void Rpn::evalPalisade(inttype minBits){
             break;
     }
 }
+#endif
 
+#ifdef HAVE_SEAL_BFV
 void Rpn::evalSealBFV(inttype minBits){
     cout << "Constructing SealBFV Context..." << endl;
     switch (minBits) {
@@ -231,7 +273,7 @@ void Rpn::evalSealBFV(inttype minBits){
             break;
     }
 }
-*/
+#endif
 
 /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
 template <typename genericContext, typename intType_t>

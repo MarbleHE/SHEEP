@@ -1,9 +1,9 @@
 #include <string>
 #include <utility>
-#include "token.hpp"
-#include "intop.hpp"
-#include "binop.hpp"
-#include "unop.hpp"
+#include "include/token.hpp"
+#include "include/intop.hpp"
+#include "include/binop.hpp"
+#include "include/unop.hpp"
 
 using namespace std;
 /// Constructor, simply copies the string and initializes the operation with a case switch on the content of the string

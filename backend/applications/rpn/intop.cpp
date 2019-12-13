@@ -1,6 +1,6 @@
 #include <vector>
 #include <stack>
-#include "intop.hpp"
+#include "include/intop.hpp"
 #include "circuit.hpp"
 #include "simple-circuits.hpp"
 

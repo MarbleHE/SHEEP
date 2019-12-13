@@ -3,7 +3,7 @@
 #include <vector>
 #include <sstream>
 
-#include "rpn.hpp"
+#include "include/rpn.hpp"
 
 using namespace std;
 

@@ -1,6 +1,6 @@
 #include <vector>
 #include <stack>
-#include "binop.hpp"
+#include "include/binop.hpp"
 #include "circuit.hpp"
 #include "simple-circuits.hpp"
 #include "circuit-util.hpp"

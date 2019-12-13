@@ -4,17 +4,21 @@ project (Sheep)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+# TODO: Should this auto-detect a global installation?
 set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/lib/HElib/src/")
 set(CMAKE_LIBRARY_PATH "${CMAKE_SOURCE_DIR}/lib/HElib/src/")
 
+# TODO: Remove front-end related code
+# Should be required only for front-end
 # C++ REST API for interaction with web app - also needs openSSL, Boost, Threads
-set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT_DIR} /usr/local/opt/openssl)
-find_package(OpenSSL)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-find_package(cpprestsdk REQUIRED)
-find_package(Boost COMPONENTS system filesystem thread date_time program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+# set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT_DIR} /usr/local/opt/openssl)
+#find_package(OpenSSL)
+#set(Boost_USE_STATIC_LIBS ON)
+#set(Boost_USE_MULTITHREADED ON)
+#find_package(cpprestsdk REQUIRED)
+#find_package(Boost COMPONENTS system filesystem thread date_time program_options REQUIRED)
+#include_directories(${Boost_INCLUDE_DIRS})
+
 find_package(Threads REQUIRED)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
