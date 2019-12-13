@@ -4,6 +4,7 @@
 #include "circuit.hpp"
 #include "simple-circuits.hpp"
 #include "circuit-util.hpp"
+#include "context.hpp"
 
 using namespace std;
 
@@ -24,7 +25,7 @@ void UnOp::handleOp(vector<int> &ptvec, stack<Circuit> &s){
     {
         throw runtime_error("Stack has not enough input for unary gate.");
     }
-    
+
     Circuit uc;
     switch (utp)
     {
@@ -63,12 +64,11 @@ void UnOp::handleOp(vector<int> &ptvec, stack<Circuit> &s){
         s.push(sc);
         break;
     }
-    /*case unoptype::SquareRoot:
-        throw GateNotImplementedError
+    case unoptype::SquareRoot:
+        throw GateNotImplemented();
         break;
     case unoptype::Invert:
-        throw GateNotImplementedError
-        */
+        throw GateNotImplemented();
     default:
         break;
     }

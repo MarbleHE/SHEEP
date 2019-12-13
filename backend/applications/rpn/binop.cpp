@@ -4,6 +4,7 @@
 #include "circuit.hpp"
 #include "simple-circuits.hpp"
 #include "circuit-util.hpp"
+#include "context.hpp"
 
 using namespace std;
 
@@ -36,8 +37,8 @@ void BinOp::handleOp(vector<int> &ptvec, stack<Circuit> &s){
     case binoptype::Multiply:
         bc = single_binary_gate_circuit(Gate::Multiply);
         break;
-    /*case binoptype::Divide:
-        throw GateNotImplementedError*/
+    case binoptype::Divide:
+        throw GateNotImplemented();
     default:
         break;
     }
