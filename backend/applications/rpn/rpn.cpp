@@ -8,6 +8,8 @@
 
 using namespace std;
 
+#include "circuit-util.hpp"
+#include "circuit.hpp"
 #include "context.hpp"
 #include "context-clear.hpp"
 

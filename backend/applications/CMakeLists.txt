@@ -137,13 +137,46 @@ endif(PALISADE_FOUND)
 
 add_test(NAME sheep-cl COMMAND $<TARGET_FILE:sheep-cl>)
 
+
+####################################################################################
+## SHEEP
+##
+## SHEEP as a static library to compile against
+####################################################################################
+
+add_library(sheep
+        ${CMAKE_SOURCE_DIR}/src/circuit.cpp
+        ${CMAKE_SOURCE_DIR}/src/circuit-util.cpp
+        ${CMAKE_SOURCE_DIR}/src/simple-circuits.cpp)
+
+if (HElib_FOUND)
+    target_link_libraries(sheep ${HElib_LIBRARIES} ${NTL_LIBRARIES} ${GMP_LIBRARIES})
+endif(HElib_FOUND)
+
+if (TFHE_FOUND)
+    target_link_libraries(sheep ${TFHE_LIBRARIES})
+endif(TFHE_FOUND)
+
+if (SEAL_FOUND)
+    target_link_libraries(sheep ${SEAL_LIBRARIES})
+endif(SEAL_FOUND)
+
+if (LP_FOUND)
+    target_link_libraries(sheep ${LP_LIBRARIES} ${GMP_LIBRARIES})
+endif(LP_FOUND)
+
+if (PALISADE_FOUND)
+    target_link_libraries(sheep ${PALISADE_LIBRARIES})
+endif(PALISADE_FOUND)
+
+
+
+
 ####################################################################################
 ## RPN
 ##
 ## A Calculator that translates between Revers Polish Notation and Sheep Circuits
 ####################################################################################
-
-include_directories(rpn/include)
 
 add_executable(rpn
         rpn/rpn_main.cpp
@@ -152,6 +185,12 @@ add_executable(rpn
         rpn/intop.cpp
         rpn/unop.cpp
         rpn/binop.cpp)
+
+target_include_directories(rpn PUBLIC
+        rpn/include
+        ../../include)
+
+target_link_libraries(rpn sheep)
 
 if (HElib_FOUND)
     target_link_libraries(rpn ${HElib_LIBRARIES} ${NTL_LIBRARIES} ${GMP_LIBRARIES})
