@@ -39,25 +39,34 @@ int main() {
             rpn = Rpn(calc);
         } catch (const runtime_error &e) {
             cout
-                    << "Error: You entered an unsupported operation, something other than integers as data/library, or your RPN has the wrong format:"
+                    << "Error: You entered an unsupported operation (gat not implemented) or your RPN has the wrong format:"
                     << endl
                     << e.what()
                     << endl;
             continue;
         }
 
-        cout << "Select your libraries.\n";
+        cout << "Select your libraries." << endl;
         printlibs();
-        cout << endl;
-        vector<int> libs = getLibs();
 
+        vector<int> libs;
+        while (libs.empty()) {
+            try {
+                libs = getLibs();
+            }
+            catch (const invalid_argument &e) {
+                cout << e.what() << endl;
+                cout << "Select some valid, available libraries." << endl;
+                printlibs();
+            }
+        }
 
         try {
             for (auto x: libs) rpn.calcWith(x);
         }
-        catch (const runtime_error &e) { //TODO: implement and use different exception, which makes sense
+        catch (const runtime_error &e) {
             cout
-                    << "Error: The number of input integers provided does not match the number of inputs required by the operations provided, or the gate is not implemented."
+                    << "Evaluation error: "
                     << endl
                     << e.what()
                     << endl;
@@ -85,11 +94,13 @@ vector<int> getLibs() {
     istringstream iss(in);
     string s;
     while (getline(iss, s, ' ')) {
-        libs.push_back(stoi(s)); //TODO: Catch stoi exception!
-    }
-    if (libs.empty()) {
-        libs.push_back(0);
-        cout << "Warning: No valid libraries selected. Plaintext calculation only.\n";
+        if (s == "" || s == " ") continue; //skip excess whitespaces
+        try {
+            libs.push_back(stoi(s));
+        }
+        catch (...) {
+            throw invalid_argument("Invalid input for library selection.");
+        }
     }
     return libs;
 }

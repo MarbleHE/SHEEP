@@ -22,11 +22,19 @@ Token::Token(string srep) {
         op = new UnOp(unop->second);
     }
     if (binop == binop_map.end() && unop == unop_map.end()) {
-        // TODO: Check for empty string
-        op = new IntOp(stoi(rep)); //TODO: Catch exception, stoi throws invalid argument on inputs other than ints.
+        try {
+            op = new IntOp(stoi(rep));
+        }
+        catch (std::out_of_range &e) {
+            throw out_of_range("Int is out of range, cannot create IntOp.");
+        }
+        catch (...) {
+            throw invalid_argument("Cannot convert string to int.");
+        }
     }
-    //ignore all other tokens, the code should never reach this section anyway
-
+    if (!op) {
+        throw runtime_error("Token was not able to derive abstract Op from string.");
+    }
 }
 /*
 Token::~Token(){

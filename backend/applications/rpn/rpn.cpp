@@ -46,7 +46,15 @@ Rpn::Rpn(const string &calculation) {
     istringstream iss(calculation);
     string s;
     while (getline(iss, s, ' ')) {
-        calc.push_back(Token(s));
+        cout << "Processing: \"" << s << "\"" << endl;
+        if (s == "" || s == " ") continue; //ignore excess whitespaces
+        try {
+            calc.push_back(Token(s));
+        }
+        catch (exception &e) {
+            cout << "Warning: some Token could not be processed and was ignored." << endl;
+            cout << e.what() << endl;
+        }
     }
     composeCircuit();
 }
@@ -111,7 +119,7 @@ void Rpn::composeCircuit() {
     // stack should now only contain the final circuit.
     if (s.size() > 1) {
         throw runtime_error(
-                "More than one Circuit remains in stack. Either the RPN was illegal, or Circuit composition failed.");
+                "More than one Circuit remains in stack. Either the RPN was illegal (wrong format), or Circuit composition failed.");
     }
     c = s.top();
     s.pop();
@@ -293,11 +301,19 @@ void Rpn::eval() {
     cout << endl;
 
     cout << "Evaluating..." << endl;
-    PtVec sortedPtV = ctx.eval_with_plaintexts(c, inputs, dc);
+    PtVec ptv;
+    try {
+       ptv = ctx.eval_with_plaintexts(c, inputs, dc);
+    }
+    catch (const GateNotImplemented &e){
+        cout << "Evaluation error: " << endl;
+        cout << e.what() << endl << endl;
+        return;
+    }
 
     //TODO: Eval should probably return a string or a numeric type
     cout << "Result is: ";
-    for (auto x : sortedPtV) cout << to_string(x[0]) << " ";
+    for (auto x : ptv) cout << to_string(x[0]) << " "; // This is a vector, such that we theoretically could have circuits with multiple outputs.
     cout << endl;
     // Prints timing results. DurationContainer.first saves info about the Circuit, .second about the Gates.
     cout.setf(ios::fixed, ios::floatfield);
