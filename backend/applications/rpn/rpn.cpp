@@ -36,7 +36,6 @@ using namespace SHEEP;
 
 #include "include/rpn.hpp"
 #include "include/token.hpp"
-#include "include/op.hpp"
 
 
 /// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
@@ -63,32 +62,32 @@ Rpn::Rpn(const string &calculation) {
 /// constructs the selected contexts and runs the previously composed circuit on them.
 /// This has ugly switch cases, because due to user input, we don't know enough at compile time and can't use templates...
 /// \param library The library to evaluate the circuit with.
-void Rpn::calcWith(int library) {
+tuple<vector<int>, DurationContainer> Rpn::calcWith(int library) {
     inttype ptBits = minBits();
     // case switch on library
     switch (library) {
         case Plaintext:
-            evalPlain(ptBits);
+            return evalPlain(ptBits);
             break;
 //TODO: Is there a better solution for this?
 #ifdef HAVE_HElib
         case HElib_F2:
-            evalHElib_F2(ptBits);
+            return evalHElib_F2(ptBits);
             break;
 #endif
 #ifdef HAVE_LP
         case LP:
-            evalLP(ptBits);
+            return evalLP(ptBits);
             break;
 #endif
 #ifdef  HAVE_PALISADE
         case Palisade:
-            evalPalisade(ptBits);
+            return evalPalisade(ptBits);
             break;
 #endif
 #ifdef HAVE_SEAL_BFV
         case SEAL_BFV:
-            evalSealBFV(ptBits);
+            return evalSealBFV(ptBits);
             break;
 #endif
 #ifdef HAVE_SEAL_CKKS
@@ -99,10 +98,11 @@ void Rpn::calcWith(int library) {
 #ifdef  HAVE_TFHE
         case TFHE:
              // Lots of options... When do we choose which? Do we choose automatically?
+             throw invalid_argument("TFHE not implemented.");
              break;
 #endif
         default:
-            cout << "Some invalid, unavailable or unimplemented library was ignored." << endl;
+            throw invalid_argument("Some invalid or unavailable library was selected for evaluation.");
             break;
     }
 }
@@ -156,23 +156,23 @@ inttype Rpn::minBits() {
 
 /// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-void Rpn::evalPlain(inttype minBits) {
+tuple<vector<int>, DurationContainer> Rpn::evalPlain(inttype minBits) {
     cout << "Constructing Plaintext Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            eval<ContextClear<int8_t>, int8_t>();
+            return eval<ContextClear<int8_t>, int8_t>();
             break;
         case inttype::INT_16:
-            eval<ContextClear<int16_t>, int16_t>();
+            return eval<ContextClear<int16_t>, int16_t>();
             break;
         case inttype::INT_32:
-            eval<ContextClear<int32_t>, int32_t>();
+            return eval<ContextClear<int32_t>, int32_t>();
             break;
         case inttype::INT_64:
-            eval<ContextClear<int64_t>, int64_t>();
+            return eval<ContextClear<int64_t>, int64_t>();
         default:
             break;
     }
@@ -181,23 +181,23 @@ void Rpn::evalPlain(inttype minBits) {
 #ifdef HAVE_HElib
 /// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-void Rpn::evalHElib_F2(inttype minBits){
+tuple<vector<int>, DurationContainer> Rpn::evalHElib_F2(inttype minBits){
     cout << "Constructing HElib_F2 Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            eval<ContextHElib_F2<int8_t >, int8_t >();
+            return eval<ContextHElib_F2<int8_t >, int8_t >();
             break;
         case inttype::INT_16:
-            eval<ContextHElib_F2<int16_t>, int16_t>(); //Comment: in example they used uints...
+            return eval<ContextHElib_F2<int16_t>, int16_t>(); //Comment: in example they used uints...
             break;
         case inttype::INT_32:
-            eval<ContextHElib_F2<int32_t>, int32_t>();
+            return eval<ContextHElib_F2<int32_t>, int32_t>();
             break;
         case inttype::INT_64:
-            eval<ContextHElib_F2<int32_t>, int32_t>();
+            return eval<ContextHElib_F2<int32_t>, int32_t>();
         default:
             break;
     }
@@ -208,23 +208,23 @@ void Rpn::evalHElib_F2(inttype minBits){
 /// N.B. Paillier cryptosystem does not support Gates other than addition.
 /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
 /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-void Rpn::evalLP(inttype minBits){
+tuple<vector<int>, DurationContainer> Rpn::evalLP(inttype minBits){
     cout << "Constructing LP Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            eval<ContextLP<int8_t >, int8_t >();
+            return eval<ContextLP<int8_t >, int8_t >();
             break;
         case inttype::INT_16:
-            eval<ContextLP<int16_t>, int16_t>(); //Comment: in example they used uints...
+            return eval<ContextLP<int16_t>, int16_t>(); //Comment: in example they used uints...
             break;
         case inttype::INT_32:
-            eval<ContextLP<int32_t>, int32_t>();
+            return eval<ContextLP<int32_t>, int32_t>();
             break;
         case inttype::INT_64:
-            eval<ContextLP<int32_t>, int32_t>();
+            return eval<ContextLP<int32_t>, int32_t>();
         default:
             break;
     }
@@ -233,23 +233,23 @@ void Rpn::evalLP(inttype minBits){
 
 
 #ifdef HAVE_PALISADE
-void Rpn::evalPalisade(inttype minBits){
+tuple<vector<int>, DurationContainer> Rpn::evalPalisade(inttype minBits){
     cout << "Constructing Palisade Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            eval<ContextPalisade<int8_t >, int8_t >();
+            return eval<ContextPalisade<int8_t >, int8_t >();
             break;
         case inttype::INT_16:
-            eval<ContextPalisade<int16_t>, int16_t>(); //Comment: in example they used uints...
+            return eval<ContextPalisade<int16_t>, int16_t>(); //Comment: in example they used uints...
             break;
         case inttype::INT_32:
-            eval<ContextPalisade<int32_t>, int32_t>();
+            return eval<ContextPalisade<int32_t>, int32_t>();
             break;
         case inttype::INT_64:
-            eval<ContextPalisade<int32_t>, int32_t>();
+            return eval<ContextPalisade<int32_t>, int32_t>();
         default:
             break;
     }
@@ -257,23 +257,23 @@ void Rpn::evalPalisade(inttype minBits){
 #endif
 
 #ifdef HAVE_SEAL_BFV
-void Rpn::evalSealBFV(inttype minBits){
+tuple<vector<int>, DurationContainer> Rpn::evalSealBFV(inttype minBits){
     cout << "Constructing SealBFV Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            eval<ContextSealBFV<int8_t >, int8_t >();
+            return eval<ContextSealBFV<int8_t >, int8_t >();
             break;
         case inttype::INT_16:
-            eval<ContextSealBFV<int16_t>, int16_t>(); //Comment: in example they used uints...
+            return eval<ContextSealBFV<int16_t>, int16_t>(); //Comment: in example they used uints...
             break;
         case inttype::INT_32:
-            eval<ContextSealBFV<int32_t>, int32_t>();
+            return eval<ContextSealBFV<int32_t>, int32_t>();
             break;
         case inttype::INT_64:
-            eval<ContextSealBFV<int32_t>, int32_t>();
+            return <ContextSealBFV<int32_t>, int32_t>();
         default:
             break;
     }
@@ -282,9 +282,7 @@ void Rpn::evalSealBFV(inttype minBits){
 
 /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
 template<typename genericContext, typename intType_t>
-void Rpn::eval() {
-    typedef std::pair<std::vector<std::chrono::duration<double, std::micro> >,
-            std::map<std::string, std::chrono::duration<double, std::micro> > > DurationContainer;
+tuple<vector<int>, DurationContainer> Rpn::eval() {
     typedef vector<vector<intType_t>> PtVec;
 
     genericContext ctx;  // paramset, bootstrappable
@@ -306,20 +304,11 @@ void Rpn::eval() {
        ptv = ctx.eval_with_plaintexts(c, inputs, dc);
     }
     catch (const GateNotImplemented &e){
-        cout << "Evaluation error: " << endl;
-        cout << e.what() << endl << endl;
-        return;
+        throw GateNotImplemented();
     }
-
-    //TODO: Eval should probably return a string or a numeric type
-    cout << "Result is: ";
-    for (auto x : ptv) cout << to_string(x[0]) << " "; // This is a vector, such that we theoretically could have circuits with multiple outputs.
-    cout << endl;
-    // Prints timing results. DurationContainer.first saves info about the Circuit, .second about the Gates.
-    cout.setf(ios::fixed, ios::floatfield);
-    cout.setf(ios::showpoint);
-    cout << "Encryption time: " << dc.first[0].count() / 1000 << " milliseconds" << endl;
-    cout << "Evaluation time: " << dc.first[1].count() / 1000 << " milliseconds" << endl;
-    cout << "Decryption time: " << dc.first[2].count() / 1000 << " milliseconds" << endl;
-    cout << endl;
+    vector<int> iptv;
+    for (auto x: ptv) {
+        iptv.push_back((int) x[0]);
+    }
+    return make_tuple(iptv,dc);
 }

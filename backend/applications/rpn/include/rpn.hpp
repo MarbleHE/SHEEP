@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <vector>
 #include <map>
 #include "token.hpp"
@@ -17,6 +18,10 @@ enum class inttype {
     INT_8, INT_16, INT_32, INT_64
 };
 
+/// Container to store timing results from circuit evaluation.
+typedef std::pair<std::vector<std::chrono::duration<double, std::micro> >,
+        std::map<std::string, std::chrono::duration<double, std::micro> > > DurationContainer;
+
 /// This is a representation of the RPN calculator. It is initialized by the String input which gets transformed
 /// at construction to Tokens containing the operations of the calculation. The circuit composition happens eagerly when an Rpn object is constructed.
 /// A calculation can be evaluated with calcWith, given a library from the enum class. The inputs are stored in ptvec, which happens eagerly at construction of an Rpn object.
@@ -33,7 +38,7 @@ public:
 
     /// Computes the the evaluation of circuit c on a context determined by library on the inputs stored in ptvec.
     /// \param library The library to evaluate the circuit with.
-    void calcWith(int library);
+    std::tuple<std::vector<int>, DurationContainer> calcWith(int library);
 
 private:
     //// Data
@@ -63,18 +68,18 @@ private:
 
     /// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-    void evalPlain(inttype minBits);
+    std::tuple<std::vector<int>, DurationContainer> evalPlain(inttype minBits);
 
 #ifdef HAVE_HElib
     /// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-    void evalHElib_F2(inttype minBits);
+    std::tuple<std::vector<int>, DurationContainer> evalHElib_F2(inttype minBits);
 #endif
 
 #ifdef HAVE_LP
     /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-    void evalLP(inttype minBits);
+    std::tuple<std::vector<int>, DurationContainer> evalLP(inttype minBits);
 #endif
 
 #ifdef HAVE_PALISADE
@@ -92,6 +97,6 @@ private:
 
     /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
     template<typename GenericContext, typename intType_t>
-    void eval();
+    std::tuple<std::vector<int>, DurationContainer> eval();
 };
 

@@ -1,7 +1,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <sstream>
+
+#include "context.hpp"
 
 #include "include/rpn.hpp"
 #include "include/avlibs.hpp"
@@ -62,7 +63,36 @@ int main() {
         }
 
         try {
-            for (auto x: libs) rpn.calcWith(x);
+            for (auto x: libs){
+                tuple <vector<int>, DurationContainer> results;
+                try {
+                    results = rpn.calcWith(x);
+                }
+                catch (const GateNotImplemented &e){
+                    cout << "Evaluation error:" << endl;
+                    cout << e.what() << endl << endl;
+                    continue;
+                }
+                catch (const invalid_argument &e){
+                    cout << "Evaluation error:" << endl;
+                    cout << e.what();
+                    cout << " (Library nr. " << x << ")" << endl;
+                    cout << endl;
+                    continue;
+                }
+                vector<int> ptv = get<0>(results);
+                DurationContainer dc = get<1>(results);
+                cout << "Result is: ";
+                for (auto x : ptv) cout << to_string(x) << " ";
+                cout << endl;
+                // Prints timing results. DurationContainer.first saves info about the Circuit, .second about the Gates.
+                cout.setf(ios::fixed, ios::floatfield);
+                cout.setf(ios::showpoint);
+                cout << "Encryption time: " << dc.first[0].count() / 1000 << " milliseconds" << endl;
+                cout << "Evaluation time: " << dc.first[1].count() / 1000 << " milliseconds" << endl;
+                cout << "Decryption time: " << dc.first[2].count() / 1000 << " milliseconds" << endl;
+                cout << endl;
+            }
         }
         catch (const runtime_error &e) {
             cout
