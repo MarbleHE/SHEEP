@@ -8,7 +8,6 @@
 
 using namespace std;
 
-#include "circuit-util.hpp"
 #include "circuit.hpp"
 #include "context.hpp"
 #include "context-clear.hpp"
@@ -95,6 +94,7 @@ void Rpn::calcWith(int library) {
              break;
 #endif
         default:
+            cout << "Some invalid, unavailable or unimplemented library was ignored." << endl;
             break;
     }
 }

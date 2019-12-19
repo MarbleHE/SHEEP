@@ -184,7 +184,7 @@ add_executable(rpn
         rpn/rpn.cpp
         rpn/intop.cpp
         rpn/unop.cpp
-        rpn/binop.cpp)
+        rpn/binop.cpp rpn/include/avlibs.hpp)
 
 target_include_directories(rpn PUBLIC
         rpn/include

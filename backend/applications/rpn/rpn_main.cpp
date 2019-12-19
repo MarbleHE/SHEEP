@@ -4,6 +4,7 @@
 #include <sstream>
 
 #include "include/rpn.hpp"
+#include "include/avlibs.hpp"
 
 using namespace std;
 
@@ -45,9 +46,8 @@ int main() {
             continue;
         }
 
-        cout << "Select your libraries.\n"
-             << "0: Plaintext" << endl << "1: HElib_F2" << endl
-             << "2: LP"/* << endl << "3: Palisade" << endl << "4: SealBFV"*/; //TODO add all AVAILABLE libraries.
+        cout << "Select your libraries.\n";
+        printlibs();
         cout << endl;
         vector<int> libs = getLibs();
 
@@ -58,6 +58,8 @@ int main() {
         catch (const runtime_error &e) { //TODO: implement and use different exception, which makes sense
             cout
                     << "Error: The number of input integers provided does not match the number of inputs required by the operations provided, or the gate is not implemented."
+                    << endl
+                    << e.what()
                     << endl;
         }
     }
