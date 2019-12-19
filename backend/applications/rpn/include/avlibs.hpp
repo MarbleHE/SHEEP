@@ -6,7 +6,7 @@
 #ifndef SHEEP_AVLIBS_HPP
 #define SHEEP_AVLIBS_HPP
 
-
+/// prints all available and unavailable libraries
 void printlibs() {
 
     bool uninstalled = false;

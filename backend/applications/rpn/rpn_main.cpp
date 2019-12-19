@@ -104,8 +104,7 @@ int main() {
     }
 }
 
-/// get from stdin the calculation in RPN and return as a string.
-/// If it is invalid, the user is prompted to retype the calculation.
+/// Get from stdin the calculation in RPN and return as a string.
 string getCalc() {
     string in;
     cout << "\nWrite a new calculation and hit enter: ";
@@ -113,9 +112,8 @@ string getCalc() {
     return in;
 }
 
-/// gets from stdin the libraries and returns them as integer vector.
-/// If nothing was specified default is plaintext.
-/// All invalid inputs will just be ignored, or an invalid argument error from stoi will be raised.
+/// Gets from stdin the libraries and returns them as integer vector.
+/// Throws invalid argument on any stoi exception. We only expect "normal" int input.
 /// \return vector containing user selected libraries as integers
 vector<int> getLibs() {
     string in;

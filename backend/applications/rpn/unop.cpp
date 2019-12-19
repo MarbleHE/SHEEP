@@ -8,18 +8,10 @@
 
 using namespace std;
 
-/// Constructor
-/// \param unopt Type of the operation (which gate). Gets simply copied into utp.
 UnOp::UnOp(unoptype unopt) {
     utp = unopt;
 }
 
-
-/// This implements the core logic of what to do when a unary operation in a calculation has to be processed.
-/// A Circuit a from the stack gets consumed, such that when handleOp returns the Circuit on top is that
-/// Circuit made sequential with the new operation b: a->b
-/// \param ptvec Vector, in which the plaintext inputs of the calculation get stored (in order of appearance).
-/// \param s Stack of circuits, which represent the intermediately computed subcomponents of the final circuit.
 void UnOp::handleOp(vector<int> &ptvec, stack<Circuit> &s) {
     if (s.empty()) {
         throw runtime_error("Stack has not enough input for unary gate.");
@@ -46,7 +38,7 @@ void UnOp::handleOp(vector<int> &ptvec, stack<Circuit> &s) {
             //     in1
             //     dup
             //   /     \
-        // out1 * out2
+            // out1 * out2
             //      |
             Circuit duplicator;
             Wire in1 = duplicator.add_input("in1");
@@ -68,6 +60,7 @@ void UnOp::handleOp(vector<int> &ptvec, stack<Circuit> &s) {
         case unoptype::Invert:
             throw GateNotImplemented();
         default:
+            throw GateNotImplemented();
             break;
     }
 }

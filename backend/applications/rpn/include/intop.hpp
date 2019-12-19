@@ -15,8 +15,7 @@ public:
     /// int representation of the integer operation
     int i;
 
-    /// This implements the core logic of what to do when a integer operation in a calculation has to be processed.
-    /// An intop simply puts the ints into ptvec, such that we can feed it into a circuit later on and puts an Alias on the Circuit stack as a placeholder for the input pushed into ptvec.
+    /// This implements the core logic of what to do when a integer operation in a calculation has to be processed by manipulating s and ptvec.
     /// \param ptvec Vector, in which the plaintext inputs of the calculation get stored (in order of appearance).
     /// \param s Stack of circuits, which represent the intermediately computed subcomponents of the final circuit.
     void handleOp(std::vector<int> &ptvec, std::stack<Circuit> &s) override;

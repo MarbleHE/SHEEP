@@ -13,11 +13,15 @@ using namespace std;
 #include "context-clear.hpp"
 
 #ifdef HAVE_HElib
+
 #include "context-helib.hpp"
+
 #endif
 
 #ifdef HAVE_LP
+
 #include "context-lp.hpp"
+
 #endif
 
 #ifdef HAVE_PALISADE
@@ -38,9 +42,6 @@ using namespace SHEEP;
 #include "include/token.hpp"
 
 
-/// Transform a string to tokens containing ints or ops and fills the vector calc with them. Whitespace separator.
-/// Then it composes the Circuit and fills ptvec by calling composeCircuit.
-/// \param calculation RPN calculation as a raw string provided by the user
 Rpn::Rpn(const string &calculation) {
     istringstream iss(calculation);
     string s;
@@ -58,10 +59,6 @@ Rpn::Rpn(const string &calculation) {
     composeCircuit();
 }
 
-/// Computes the types for the contexts with minBits, then (with the switch cased templates)
-/// constructs the selected contexts and runs the previously composed circuit on them.
-/// This has ugly switch cases, because due to user input, we don't know enough at compile time and can't use templates...
-/// \param library The library to evaluate the circuit with.
 tuple<vector<int>, DurationContainer> Rpn::calcWith(int library) {
     inttype ptBits = minBits();
     // case switch on library
@@ -97,9 +94,9 @@ tuple<vector<int>, DurationContainer> Rpn::calcWith(int library) {
 #endif
 #ifdef  HAVE_TFHE
         case TFHE:
-             // Lots of options... When do we choose which? Do we choose automatically?
-             throw invalid_argument("TFHE not implemented.");
-             break;
+            // Lots of options... When do we choose which? Do we choose automatically?
+            throw invalid_argument("TFHE not implemented.");
+            break;
 #endif
         default:
             throw invalid_argument("Some invalid or unavailable library was selected for evaluation.");
@@ -107,8 +104,6 @@ tuple<vector<int>, DurationContainer> Rpn::calcWith(int library) {
     }
 }
 
-/// Composes a circuit given a calculation stored in the object in calc.
-/// It also fills ptvec.
 void Rpn::composeCircuit() {
     // this stack contains circuits of partial results. Later, they will get combined to a single Circuit using sequential/parallel circuit composition.
     stack<Circuit> s;
@@ -127,12 +122,6 @@ void Rpn::composeCircuit() {
     cout << c << endl;
 }
 
-/// minBits determines the minimal required number of bits based on the user input
-/// It is a very easy implementation, assuming no overflow happens in the circuit.
-/// The only thing checked is whether an encoding of each plaintext is possible.
-/// In the future one could expand this such that it is possible to
-/// estimate size of the result and therefore set the CipherText size in the context.
-/// \return inttype which is at least required to represent the biggest integer in the calculation (in ptvec)
 inttype Rpn::minBits() {
     int cmax = 0;
     for (int i: ptvec) {
@@ -154,8 +143,7 @@ inttype Rpn::minBits() {
     throw invalid_argument("Integer too large for 64 bits");
 }
 
-/// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
-/// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
+
 tuple<vector<int>, DurationContainer> Rpn::evalPlain(inttype minBits) {
     cout << "Constructing Plaintext Context..." << endl;
     switch (minBits) {
@@ -179,16 +167,15 @@ tuple<vector<int>, DurationContainer> Rpn::evalPlain(inttype minBits) {
 }
 
 #ifdef HAVE_HElib
-/// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
-/// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-tuple<vector<int>, DurationContainer> Rpn::evalHElib_F2(inttype minBits){
+
+tuple<vector<int>, DurationContainer> Rpn::evalHElib_F2(inttype minBits) {
     cout << "Constructing HElib_F2 Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            return eval<ContextHElib_F2<int8_t >, int8_t >();
+            return eval<ContextHElib_F2<int8_t>, int8_t>();
             break;
         case inttype::INT_16:
             return eval<ContextHElib_F2<int16_t>, int16_t>(); //Comment: in example they used uints...
@@ -202,20 +189,19 @@ tuple<vector<int>, DurationContainer> Rpn::evalHElib_F2(inttype minBits){
             break;
     }
 }
+
 #endif
 
 #ifdef HAVE_LP
-/// N.B. Paillier cryptosystem does not support Gates other than addition.
-/// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
-/// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
-tuple<vector<int>, DurationContainer> Rpn::evalLP(inttype minBits){
+
+tuple<vector<int>, DurationContainer> Rpn::evalLP(inttype minBits) {
     cout << "Constructing LP Context..." << endl;
     switch (minBits) {
         // case switch based on minimal number of bits needed for representation of inputs
         // Sadly a type determined at runtime has to be case switched or dynamically bound and cannot be handled with templates.
         // set plaintext context and evaluate c on it
         case inttype::INT_8:
-            return eval<ContextLP<int8_t >, int8_t >();
+            return eval<ContextLP<int8_t>, int8_t>();
             break;
         case inttype::INT_16:
             return eval<ContextLP<int16_t>, int16_t>(); //Comment: in example they used uints...
@@ -229,6 +215,7 @@ tuple<vector<int>, DurationContainer> Rpn::evalLP(inttype minBits){
             break;
     }
 }
+
 #endif
 
 
@@ -280,7 +267,6 @@ tuple<vector<int>, DurationContainer> Rpn::evalSealBFV(inttype minBits){
 }
 #endif
 
-/// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
 template<typename genericContext, typename intType_t>
 tuple<vector<int>, DurationContainer> Rpn::eval() {
     typedef vector<vector<intType_t>> PtVec;
@@ -301,14 +287,14 @@ tuple<vector<int>, DurationContainer> Rpn::eval() {
     cout << "Evaluating..." << endl;
     PtVec ptv;
     try {
-       ptv = ctx.eval_with_plaintexts(c, inputs, dc);
+        ptv = ctx.eval_with_plaintexts(c, inputs, dc);
     }
-    catch (const GateNotImplemented &e){
+    catch (const GateNotImplemented &e) {
         throw GateNotImplemented();
     }
     vector<int> iptv;
     for (auto x: ptv) {
         iptv.push_back((int) x[0]);
     }
-    return make_tuple(iptv,dc);
+    return make_tuple(iptv, dc);
 }

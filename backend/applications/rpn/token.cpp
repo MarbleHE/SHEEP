@@ -7,12 +7,10 @@
 
 using namespace std;
 
-/// Constructor, simply copies the string and initializes the operation with a case switch on the content of the string
-/// Depending on the input, we construct the corresponding operation.
-/// We interpret anything not similar to any of the operations as integers.
-/// \param srep String representation of the token, gets copies into rep and is the string we case switch on.
 Token::Token(string srep) {
     rep = std::move(srep);
+    // Look for any matching binary or unary operation with the string.
+    // Set the Token operation to that.
     auto binop = binop_map.find(rep);
     auto unop = unop_map.find(rep);
     if (binop != binop_map.end()) {
@@ -21,6 +19,7 @@ Token::Token(string srep) {
     if (unop != unop_map.end()) {
         op = new UnOp(unop->second);
     }
+    // If we didn't have a match, it might be an integer. Try to make an IntOp.
     if (binop == binop_map.end() && unop == unop_map.end()) {
         try {
             op = new IntOp(stoi(rep));
@@ -32,6 +31,7 @@ Token::Token(string srep) {
             throw invalid_argument("Cannot convert string to int.");
         }
     }
+    // If we didn't have an int either...
     if (!op) {
         throw runtime_error("Token was not able to derive abstract Op from string.");
     }

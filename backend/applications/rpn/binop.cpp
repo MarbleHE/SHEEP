@@ -8,17 +8,10 @@
 
 using namespace std;
 
-/// Constructor
-/// \param binopt The type of operation (the gate). Gets copied into btp.
 BinOp::BinOp(binoptype binopt) {
     btp = binopt;
 }
 
-/// This implements the core logic of what to do when a binary operation in a calculation has to processed.
-/// It consumes 2 Circuits from the stack and pushes a new one on the stack by feeding
-/// them into a new circuit (containing the binary gate), which implements the computation determined by the operation.
-/// \param ptvec Vector, in which the plaintext inputs of the calculation get stored (in order of appearance).
-/// \param s Stack of circuits, which represent the intermediately computed subcomponents of the final circuit.
 void BinOp::handleOp(vector<int> &ptvec, stack<Circuit> &s) {
     if (s.size() < 2) {
         throw runtime_error("Stack has not enough input for binary gate."); // TODO: implement meaningful error
@@ -38,6 +31,7 @@ void BinOp::handleOp(vector<int> &ptvec, stack<Circuit> &s) {
         case binoptype::Divide:
             throw GateNotImplemented();
         default:
+            throw GateNotImplemented();
             break;
     }
     Circuit l;

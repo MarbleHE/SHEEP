@@ -38,24 +38,24 @@ public:
 
     /// Computes the the evaluation of circuit c on a context determined by library on the inputs stored in ptvec.
     /// \param library The library to evaluate the circuit with.
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     std::tuple<std::vector<int>, DurationContainer> calcWith(int library);
 
 private:
     //// Data
 
-    /// A calculation is a vector of Tokens. Tokens consist of their string representation and their abstract operation IntOp, UnOp or BinOp.
+    /// A calculation is a vector of Tokens. Tokens consist of their string representation and their abstract operation..
     Calculation calc;
 
     /// The final Circuit composed from the calculation provided by the user.
     Circuit c;
 
-    /// All integer inputs from the calculation. They will all be encrypted and fed into the circuit.
+    /// All plaintext integer inputs from the calculation. The idea is to later encrypt them and feed them into the Circuit c (given some library).
     std::vector<int> ptvec;
 
     //// Helpers
 
-    /// This function composes the circuit by processing the calculation from left to right and manipulating a Circuit stack.
-    /// When the end of the calculation is reached, the stack should contain the final circuit, which gets put into c.
+    /// This function composes the Circuit c by processing the Calculation calc.
     void composeCircuit();
 
     /// This function calculates the minimal amount of bits required to represent the biggest input integer to instantiate
@@ -68,23 +68,27 @@ private:
 
     /// calls evaluate with ContextPlain and case switches intType_t template type on number of bits required.
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     std::tuple<std::vector<int>, DurationContainer> evalPlain(inttype minBits);
 
 #ifdef HAVE_HElib
     /// calls evaluate with ContextHElib_F2 and case switches intType_t template type on number of bits required
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     std::tuple<std::vector<int>, DurationContainer> evalHElib_F2(inttype minBits);
 #endif
 
 #ifdef HAVE_LP
     /// calls evaluate with ContextLP and case switches intType_t template type on number of bits required
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     std::tuple<std::vector<int>, DurationContainer> evalLP(inttype minBits);
 #endif
 
 #ifdef HAVE_PALISADE
     /// calls evaluate with ContextPalisade and case switches intType_t template type on number of bits required
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     void evalPalisade(inttype minBits);
 
 #endif
@@ -92,10 +96,12 @@ private:
 #ifdef HAVE_SEAL_BFV
     /// calls evaluate with ContextSealBFV and case switches intType_t template type on number of bits required
     /// \param minBits Smallest Integer type which is at least required to represent the biggest integer.
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     void evalSealBFV(inttype minBits);
 #endif
 
     /// This template evaluates Circuit c on some context with some int type (int8_t, etc.) given the inputs from ptvec
+    /// \return A tuple of the plaintext output and the time measurements during the evaluation.
     template<typename GenericContext, typename intType_t>
     std::tuple<std::vector<int>, DurationContainer> eval();
 };
