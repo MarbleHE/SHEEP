@@ -1,3 +1,90 @@
+# Reverse Polish Notation calculator powered by SHEEP, a Homomorphic Encryption Evaluation Platform
+
+## Installation - local
+
+## Install git, gcc, cmake, tbb
+
+### get wget git etc
+RUN apt-get update; apt-get -y install git
+RUN apt-get update; apt-get -y install wget
+
+### get gcc-7 (gcc >=6 needed for SEAL).
+apt-get -y install software-properties-common
+add-apt-repository -y  ppa:ubuntu-toolchain-r/test
+apt-get update; apt-get -y install gcc-7 g++-7
+apt-get update; apt-get -y install build-essential
+update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10
+update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 10
+update-alternatives --set gcc /usr/bin/gcc-7
+update-alternatives --set g++ /usr/bin/g++-7
+
+### build cmake from source (to get a new enough version for SEAL)
+wget https://cmake.org/files/v3.11/cmake-3.11.4.tar.gz
+tar -xvzf cmake-3.11.4.tar.gz
+cd cmake-3.11.4; export CC=gcc-7; export CXX=g++-7; ./bootstrap; make -j4; make install
+
+### install intel-tbb for parallelisation
+apt-get -y install libtbb-dev
+
+## Build the RPN calculator
+git clone --recurse-submodules -j8 https://github.com/stmario/SHEEP.git
+
+## Build HElib
+
+### get gmp (needed for HElib)
+apt-get -y install m4
+wget https://gmplib.org/download/gmp/gmp-6.1.2.tar.xz
+tar -xvf gmp-6.1.2.tar.xz
+cd gmp-6.1.2; export CC=gcc-7; export CXX=g++-7; ./configure; make; make install
+
+### get ntl (needed for HElib)
+wget http://www.shoup.net/ntl/ntl-11.1.0.tar.gz
+tar -xvzf ntl-11.1.0.tar.gz
+cd ntl-11.1.0/src; export CC=gcc-7; export CXX=g++-7; ./configure NTL_GMP_LIP=on NTL_EXCEPTIONS=on; make; make install
+
+### build HElib
+cd SHEEP/backend/lib/HElib; git reset --hard 9c50908a3538f5df77df523e525e1f9841f22eb2
+cd SHEEP/backend/lib/HElib; git submodule update --init
+cd SHEEP/backend/lib/HElib/src ; export CC=gcc-7; export CXX=g++-7; make clean; make;
+
+## Build TFHE
+
+### get fftw3 (needed for TFHE)
+apt-get install -y libfftw3-dev
+
+### build TFHE
+cd SHEEP/backend/lib/tfhe; git reset --hard a65271bc8f5f0015c71351ed8746dd8eec051e29
+cd SHEEP/backend/lib/tfhe; git submodule update --init
+
+cd SHEEP/backend/lib/tfhe/build; export CC=gcc-7; export CXX=g++-7; cmake ../src -DENABLE_TESTS=on -DENABLE_FFTW=on -DCMAKE_BUILD_TYPE=optim -DENABLE_NAYUKI_PORTABLE=off -DENABLE_SPQLIOS_AVX=off -DENABLE_SPQLIOS_FMA=off -DENABLE_NAYUKI_AVX=off
+cd SHEEP/backend/lib/tfhe/build; make; make install;
+
+### get and build libpaillier
+wget http://hms.isi.jhu.edu/acsc/libpaillier/libpaillier-0.8.tar.gz
+tar -xvzf libpaillier-0.8.tar.gz
+cd libpaillier-0.8 ; ./configure; make; make install
+
+### install SEAL (Not working)
+RUN git clone https://github.com/microsoft/SEAL.git
+RUN cd SEAL/native/src; export CC=gcc-7; export CXX=g++-7 ; cmake .; make; make install
+
+### install PALISADE (Not working)
+RUN apt-get -y install lzip
+RUN apt-get -y install flex
+RUN apt-get -y install bison
+RUN git clone https://git.njit.edu/palisade/PALISADE.git
+RUN cd PALISADE && ./configure.sh
+RUN cd PALISADE && echo "@@@@@" && g++ --version && CC=gcc-7 CXX=g++-7 make 
+
+### get cpprestsdk (for the REST API) (OPTIONAL, not required for the RPN)
+RUN apt-get update
+RUN apt-get -y install libssl-dev
+RUN apt-get -y install libboost-all-dev
+RUN apt-get update
+RUN git clone --recurse-submodules  https://github.com/Microsoft/cpprestsdk.git casablanca
+RUN cd casablanca/Release; mkdir build.debug; cd build.debug; export CC=gcc-7; export CXX=g++-7; cmake .. -DCMAKE_BUILD_TYPE=Debug; make install
+
+
 # SHEEP is a Homomorphic Encryption Evaluation Platform
 
 ## Disclaimer
