@@ -1,5 +1,6 @@
 # either docker or user is responsible of installing all the libraries into the backend/lib
-backend/lib
+# backend/lib
+backend/lib/tfhe/build/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -8,6 +9,7 @@ __pycache__/
 
 # C extensions
 *.so
+*.o
 
 # Distribution / packaging
 .Python
@@ -17,7 +19,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/
 lib64/
 parts/
 sdist/
