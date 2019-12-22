@@ -1,0 +1,6 @@
+[submodule "backend/lib/HElib"]
+	path = backend/lib/HElib
+	url = ../../shaih/HElib.git
+[submodule "backend/lib/tfhe"]
+	path = backend/lib/tfhe
+	url = ../../tfhe/tfhe.git
