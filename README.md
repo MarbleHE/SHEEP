@@ -88,18 +88,24 @@ cd libpaillier-0.8 ; ./configure; make; make install
 
 ## install SEAL (Not working)
 ```
-RUN git clone https://github.com/microsoft/SEAL.git
-RUN cd SEAL/native/src; export CC=gcc-7; export CXX=g++-7 ; cmake .; make; make install
+git clone https://github.com/microsoft/SEAL.git
+cd SEAL/native/src; export CC=gcc-7; export CXX=g++-7 ; cmake .; make; make install
 ```
 
-## install PALISADE (Not working)
+## install PALISADE (Not working, source: https://gitlab.com/palisade/palisade-release/-/wikis/Instructions-for-building-PALISADE-in-Linux)
 ```
-RUN apt-get -y install lzip
-RUN apt-get -y install flex
-RUN apt-get -y install bison
-RUN git clone https://git.njit.edu/palisade/PALISADE.git
-RUN cd PALISADE && ./configure.sh
-RUN cd PALISADE && echo "@@@@@" && g++ --version && CC=gcc-7 CXX=g++-7 make 
+sudo apt-get install build-essential
+sudo apt-get install cmake
+sudo apt-get install autoconf
+git clone https://gitlab.com/palisade/palisade-release.git
+cd palisade-release/
+git submodule sync --recursive
+git submodule update --init  --recursive
+mkdir build
+cd build
+cmake ..
+make -j8
+make install
 ```
 
 ## get cpprestsdk (for the REST API) (OPTIONAL, not required for the RPN)
@@ -110,6 +116,17 @@ RUN apt-get -y install libboost-all-dev
 RUN apt-get update
 RUN git clone --recurse-submodules  https://github.com/Microsoft/cpprestsdk.git casablanca
 RUN cd casablanca/Release; mkdir build.debug; cd build.debug; export CC=gcc-7; export CXX=g++-7; cmake .. -DCMAKE_BUILD_TYPE=Debug; make install
+```
+
+## Building Rpn
+
+And finally build Rpn:
+```
+cd <base SHEEP dir>/backend
+mkdir build
+cd build
+cmake ../
+make rpn
 ```
 
 # SHEEP is a Homomorphic Encryption Evaluation Platform
