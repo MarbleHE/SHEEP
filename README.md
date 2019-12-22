@@ -79,20 +79,20 @@ cd SHEEP/backend/lib/tfhe/build; export CC=gcc-7; export CXX=g++-7; cmake ../src
 cd SHEEP/backend/lib/tfhe/build; make; make install;
 ```
 
-### get and build libpaillier
+## get and build libpaillier
 ```
 wget http://hms.isi.jhu.edu/acsc/libpaillier/libpaillier-0.8.tar.gz
 tar -xvzf libpaillier-0.8.tar.gz
 cd libpaillier-0.8 ; ./configure; make; make install
 ```
 
-### install SEAL (Not working)
+## install SEAL (Not working)
 ```
 RUN git clone https://github.com/microsoft/SEAL.git
 RUN cd SEAL/native/src; export CC=gcc-7; export CXX=g++-7 ; cmake .; make; make install
 ```
 
-### install PALISADE (Not working)
+## install PALISADE (Not working)
 ```
 RUN apt-get -y install lzip
 RUN apt-get -y install flex
@@ -102,7 +102,7 @@ RUN cd PALISADE && ./configure.sh
 RUN cd PALISADE && echo "@@@@@" && g++ --version && CC=gcc-7 CXX=g++-7 make 
 ```
 
-### get cpprestsdk (for the REST API) (OPTIONAL, not required for the RPN)
+## get cpprestsdk (for the REST API) (OPTIONAL, not required for the RPN)
 ```
 RUN apt-get update
 RUN apt-get -y install libssl-dev
