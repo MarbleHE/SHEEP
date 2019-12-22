@@ -211,3 +211,5 @@ endif(LP_FOUND)
 if (PALISADE_FOUND)
     target_link_libraries(rpn ${PALISADE_LIBRARIES})
 endif(PALISADE_FOUND)
+
+add_subdirectory(rpn/tests)
