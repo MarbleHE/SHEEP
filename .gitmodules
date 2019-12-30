@@ -4,6 +4,3 @@
 [submodule "backend/lib/tfhe"]
 	path = backend/lib/tfhe
 	url = ../../tfhe/tfhe.git
-[submodule "backend/applications/rpn/tests/googletest"]
-	path = backend/applications/rpn/tests/googletest
-	url = https://github.com/google/googletest.git
