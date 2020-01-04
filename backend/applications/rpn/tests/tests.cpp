@@ -20,33 +20,105 @@
 using namespace std;
 
 /*
- * Basic tests for CMake build.
+ * Basic Op tests
  */
 
 TEST(BasicIntop__Test, One)
 {
     auto i = IntOp(1);
-    ASSERT_EQ(1, i.i);
+    EXPECT_EQ(1, i.i);
 }
 
 TEST(BasicUnop__Test, Negate){
     auto t = Token("--");
     auto u = (UnOp*) t.op;
-    ASSERT_EQ(unoptype::Negate, u->utp);
+    EXPECT_EQ(unoptype::Negate, u->utp);
 }
 
 /*TODO
  * Basic test for ^2 UnOp, with TEST_P
  */
 
-/* TODO
- * Test all valid token generations.
+/*
+ * Test token generation.
  */
-class TokenTests:public ::testing::Test{
-protected:
-    void SetUp() override{Test::SetUp();};
-    void TearDown() override{Test::TearDown();};
-};
+/// Empty string should raise an invalid_argument exception.
+TEST(TokenTest, EmptyStringTest){
+    try {
+        auto t = Token("");
+        FAIL() << "No exception. Expected invalid_argument(\"Cannot convert string to int.\")";
+    }
+    catch (const invalid_argument &e){
+        EXPECT_STREQ(e.what(), "Cannot convert string to int.");
+    }
+    catch(const exception &e){
+        FAIL() << "Wrong exception. Expected invalid_argument(\"Cannot convert string to int.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+/// Whitespaces should raise an invalid_argument exception.
+TEST(TokenTest, WhitespaceStringTest){
+    try {
+        auto t = Token(" ");
+        FAIL() << "No exception. Expected invalid_argument(\"Cannot convert string to int.\")";
+    }
+    catch (const invalid_argument &e){
+        EXPECT_STREQ(e.what(), "Cannot convert string to int.");
+    }
+    catch(const exception &e){
+        FAIL() << "Wrong exception. Expected invalid_argument(\"Cannot convert string to int.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+/// Special characters should raise an invalid_argument exception.
+TEST(TokenTest, SpecialcharStringTest){
+    try {
+        auto t = Token(")");
+        FAIL() << "No exception. Expected invalid_argument(\"Cannot convert string to int.\")";
+    }
+    catch (const invalid_argument &e){
+        EXPECT_STREQ(e.what(), "Cannot convert string to int.");
+    }
+    catch(const exception &e){
+        FAIL() << "Wrong exception. Expected invalid_argument(\"Cannot convert string to int.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+/// Strings which are not an int or any Op should raise an invalid_argument exception.
+TEST(TokenTest, SomeGarbageStringTest){
+    try {
+        auto t = Token("SomeGarbage");
+        FAIL() << "No exception. Expected invalid_argument(\"Cannot convert string to int.\")";
+    }
+    catch (const invalid_argument &e){
+        EXPECT_STREQ(e.what(), "Cannot convert string to int.");
+    }
+    catch(const exception &e){
+        FAIL() << "Wrong exception. Expected invalid_argument(\"Cannot convert string to int.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+/// Ints which are too big (or too small) should raise an out_of_range exception.
+TEST(TokenTest, OutOfRangeStringTest){
+    try {
+        auto t = Token("9999999999999999999999999999");
+        FAIL() << "No exception. Expected out_of_range(\"Int is out of range, cannot create IntOp.\")";
+    }
+    catch (const out_of_range &e){
+        EXPECT_STREQ(e.what(), "Int is out of range, cannot create IntOp.");
+    }
+    catch(const exception &e){
+        FAIL() << "Wrong exception. Expected out_of_range(\"Int is out of range, cannot create IntOp.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+TEST(TokenTest, IntTest){
+    auto t = Token("42");
+    ASSERT_EQ(t.getRep(), "42");
+    IntOp* top = (IntOp *) t.op;
+    EXPECT_EQ(top->i, IntOp(42).i);
+}
+
 
 /* TODO
  * Test Rpn
@@ -60,8 +132,7 @@ protected:
 };
 
 /*
- * TODO
- * Test HandleOp
+ * Tests for HandleOp
  */
 class HandleOpTest: public ::testing::Test{
 protected:
@@ -79,6 +150,8 @@ protected:
         delete operation;
     }
 };
+
+/// IntOp cases
 
 /// Test IntOp on initially empty ptvec and stack.
 TEST_F(HandleOpTest, IntOnEmptyState){
@@ -110,6 +183,8 @@ TEST_F(HandleOpTest, IntOnSomeState){
     EXPECT_EQ(s,expected_s);
 }
 
+/// UnOp cases
+
 /// Test exception raised on empty stack.
 TEST_F(HandleOpTest, UnOpOnEmptyState){
     operation = (Op *) new UnOp(unoptype::Negate);
@@ -120,8 +195,8 @@ TEST_F(HandleOpTest, UnOpOnEmptyState){
     catch (const runtime_error &e){
         EXPECT_STREQ(e.what(), "Stack has not enough input for unary gate.");
     }
-    catch (...){
-        FAIL() << "Wrong exception raised. Expected runtime_error(\"Stack has not enough input for unary gate.\")";
+    catch (const exception &e){
+        FAIL() << "Wrong exception raised. Expected runtime_error(\"Stack has not enough input for unary gate.\")" << endl << "Got instead: " <<e.what();
     }
 
 }
@@ -138,8 +213,8 @@ TEST_F(HandleOpTest, UnOpUnimplemented){
     catch (const GateNotImplemented &e){
         EXPECT_STREQ(e.what(), "Gate not implemented.");
     }
-    catch (...){
-        FAIL() << "Wrong exception raised. Expected GateNotImplemented(\"Gate not implemented.\")";
+    catch (const exception &e){
+        FAIL() << "Wrong exception raised. Expected GateNotImplemented(\"Gate not implemented.\")" << endl << "Got instead: " <<e.what();
     }
 }
 
@@ -170,7 +245,60 @@ TEST_F(HandleOpTest, UnOponSomeState){
     EXPECT_EQ(s,expected_s);
 }
 
-//TODO test all binop cases
+/// Binop cases
+
+/// Test BinOp to raise exception on empty stack.
+TEST_F(HandleOpTest, BinOpOnEmptyState){
+    operation = (Op *) new BinOp(binoptype::Add);
+
+    try {
+        operation->handleOp(ptvec,s);
+        FAIL() << "No exception raised. Expected runtime_error(\"Stack has not enough input for binary gate.\")";
+    }
+    catch (const runtime_error &e){
+        EXPECT_STREQ(e.what(), "Stack has not enough input for binary gate.");
+    }
+    catch (const exception &e){
+        FAIL() << "Wrong exception raised. Expected runtime_error(\"Stack has not enough input for binary gate.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+/// Test BinOp to raise exception on stack with only one element.
+TEST_F(HandleOpTest, BinOpOnSingleElementStack){
+    operation = (Op *) new BinOp(binoptype::Add);
+    s.push(single_unary_gate_circuit(Gate::Alias));
+
+    try {
+        operation->handleOp(ptvec,s);
+        FAIL() << "No exception raised. Expected runtime_error(\"Stack has not enough input for binary gate.\")";
+    }
+    catch (const runtime_error &e){
+        EXPECT_STREQ(e.what(), "Stack has not enough input for binary gate.");
+    }
+    catch (const exception &e){
+        FAIL() << "Wrong exception raised. Expected runtime_error(\"Stack has not enough input for binary gate.\")" << endl << "Got instead: " <<e.what();
+    }
+}
+
+/// Test BinOp on some stack with more than one element.
+TEST_F(HandleOpTest, BinOpOnSomeState){
+    operation = (Op *) new BinOp(binoptype::Add);
+    s.push(single_unary_gate_circuit(Gate::Alias));
+    s.push((single_unary_gate_circuit(Gate::Alias)));
+    s.push((single_unary_gate_circuit(Gate::Alias)));
+    expected_s = s;
+    auto c_r = expected_s.top();
+    expected_s.pop();
+    auto c_l = expected_s.top();
+    expected_s.pop();
+    expected_s.push(seq(par(c_l,c_r),single_binary_gate_circuit(Gate::Add)));
+
+    operation->handleOp(ptvec,s);
+
+    EXPECT_EQ(s,expected_s);
+}
+
+
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

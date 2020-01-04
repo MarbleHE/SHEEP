@@ -15,6 +15,8 @@ public:
     /// Abstract operation representing it as a one of its Subclasses.
     Op *op; //this has to be a pointer, because Op is abstract
 
+    /// Getter for string representation. (Debugging)
+    const std::string &getRep() const;
 private:
     /// The string that will be interpreted by an operation. ("+", "42", etc...)
     std::string rep;

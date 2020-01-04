@@ -36,6 +36,11 @@ Token::Token(string srep) {
         throw runtime_error("Token was not able to derive abstract Op from string.");
     }
 }
+
+const string &Token::getRep() const {
+    return rep;
+}
+
 /*
 Token::~Token(){
     delete op;
