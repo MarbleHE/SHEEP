@@ -154,7 +154,21 @@ TEST_F(HandleOpTest, UnOpOnSimpleState){
     EXPECT_EQ(s, expected_s);
 }
 
-//TODO test on some complicated setting
+/// Test UnOp on some more complicated stack
+TEST_F(HandleOpTest, UnOponSomeState){
+    operation = (Op *) new UnOp(unoptype::Negate);
+    s.push(single_unary_gate_circuit(Gate::Alias));
+    s.push(single_unary_gate_circuit(Gate::Alias));
+    s.push(single_binary_gate_circuit(Gate::Add));
+    expected_s = s;
+    auto circ = expected_s.top();
+    expected_s.pop();
+    expected_s.push(seq(circ,single_unary_gate_circuit(Gate::Negate)));
+
+    operation->handleOp(ptvec,s);
+
+    EXPECT_EQ(s,expected_s);
+}
 
 //TODO test all binop cases
 
