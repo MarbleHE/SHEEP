@@ -12,6 +12,7 @@
 #include "rpn.hpp"
 #include "token.hpp"
 #include "simple-circuits.hpp"
+#include "circuit-util.hpp"
 #include "context.hpp"
 
 #include "gtest/gtest.h"
@@ -142,10 +143,15 @@ TEST_F(HandleOpTest, UnOpUnimplemented){
     }
 }
 
-//TODO test on one alias gate
+/// Test on one alias gate in stack with Negate UnOp
 TEST_F(HandleOpTest, UnOpOnSimpleState){
     operation = (Op *) new UnOp(unoptype::Negate);
+    s.push(single_unary_gate_circuit(Gate::Alias));
+    expected_s.push(seq(single_unary_gate_circuit(Gate::Alias),single_unary_gate_circuit(Gate::Negate)));
 
+    operation->handleOp(ptvec,s);
+
+    EXPECT_EQ(s, expected_s);
 }
 
 //TODO test on some complicated setting
