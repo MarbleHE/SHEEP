@@ -112,21 +112,34 @@ TEST(TokenTest, OutOfRangeStringTest){
     }
 }
 
+/// An int processed by a Token should result in a proper IntOp.
 TEST(TokenTest, IntTest){
     auto t = Token("42");
     ASSERT_EQ(t.getRep(), "42");
-    IntOp* top = (IntOp *) t.op;
+    auto top = (IntOp *) t.op;
     EXPECT_EQ(top->i, IntOp(42).i);
 }
 
+/// A "--" should generate a negation UnOp.
+TEST(TokenTest, NegUnOpTest){
+    auto t = Token("--");
+    auto top = (UnOp *) t.op;
+    EXPECT_EQ(top->utp, UnOp(unoptype::Negate).utp);
+}
 
-/* TODO
- * Test Rpn
- * Maybe it is smarter to use instantiations of some Rpn objects, instead of comparing vectors and stacks...
+/// A "-" should generate a subtract BinOp.
+TEST(TokenTest, NegBinOpTest){
+    auto t = Token("-");
+    auto  top = (BinOp *) t.op;
+    EXPECT_EQ(top->btp, BinOp(binoptype::Subtract).btp);
+}
+
+/* TODO Tests for Rpn
  */
 class RpnTest:public ::testing::Test{
 protected:
     Rpn rpn;
+    Rpn expected_rpn;
     void SetUp() override{Test::SetUp();};
     void TearDown() override{Test::TearDown();};
 };
