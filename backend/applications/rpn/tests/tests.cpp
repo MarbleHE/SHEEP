@@ -12,6 +12,7 @@
 #include "rpn.hpp"
 #include "token.hpp"
 #include "simple-circuits.hpp"
+#include "context.hpp"
 
 #include "gtest/gtest.h"
 
@@ -32,6 +33,10 @@ TEST(BasicUnop__Test, Negate){
     auto u = (UnOp*) t.op;
     ASSERT_EQ(unoptype::Negate, u->utp);
 }
+
+/*TODO
+ * Basic test for ^2 UnOp, with TEST_P
+ */
 
 /* TODO
  * Test all valid token generations.
@@ -74,6 +79,7 @@ protected:
     }
 };
 
+/// Test IntOp on initially empty ptvec and stack.
 TEST_F(HandleOpTest, IntOnEmptyState){
     operation = (Op *) new IntOp(1);
     expected_s.push(single_unary_gate_circuit(Gate::Alias));
@@ -85,6 +91,7 @@ TEST_F(HandleOpTest, IntOnEmptyState){
     EXPECT_EQ(s,expected_s);
 }
 
+/// Test handling of IntOp on some stack and ptvec.
 TEST_F(HandleOpTest, IntOnSomeState){
     operation = (Op *) new IntOp(42);
     s.push(single_binary_gate_circuit(Gate::Multiply)); //some circuits previously residing on stack...
@@ -102,7 +109,38 @@ TEST_F(HandleOpTest, IntOnSomeState){
     EXPECT_EQ(s,expected_s);
 }
 
-//TODO also test exception raised on empty stack.
+/// Test exception raised on empty stack.
+TEST_F(HandleOpTest, UnOpOnEmptyState){
+    operation = (Op *) new UnOp(unoptype::Negate);
+    try {
+        operation->handleOp(ptvec,s);
+        FAIL() << "No exception raised. Expected runtime_error(\"Stack has not enough input for unary gate.\")";
+    }
+    catch (const runtime_error &e){
+        EXPECT_STREQ(e.what(), "Stack has not enough input for unary gate.");
+    }
+    catch (...){
+        FAIL() << "Wrong exception raised. Expected runtime_error(\"Stack has not enough input for unary gate.\")";
+    }
+
+}
+
+/// Test unimplemented exception with operation Invert
+TEST_F(HandleOpTest, UnOpUnimplemented){
+    operation = (Op *) new UnOp(unoptype::Invert);
+    s.push(single_unary_gate_circuit(Gate::Alias)); //some gate to prevent exception
+
+    try {
+        operation->handleOp(ptvec,s);
+        FAIL() << "No exception raised. Expected GateNotImplemented(\"Gate not implemented.\")";
+    }
+    catch (const GateNotImplemented &e){
+        EXPECT_STREQ(e.what(), "Gate not implemented.");
+    }
+    catch (...){
+        FAIL() << "Wrong exception raised. Expected GateNotImplemented(\"Gate not implemented.\")";
+    }
+}
 
 //TODO test on one alias gate
 TEST_F(HandleOpTest, UnOpOnSimpleState){
