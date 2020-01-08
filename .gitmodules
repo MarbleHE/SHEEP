@@ -4,3 +4,9 @@
 [submodule "backend/lib/tfhe"]
 	path = backend/lib/tfhe
 	url = ../../tfhe/tfhe.git
+[submodule "backend/lib/SEAL"]
+	path = backend/lib/SEAL
+	url = ../../microsoft/SEAL.git
+[submodule "backend/lib/palisade-release"]
+	path = backend/lib/palisade-release
+	url = https://gitlab.com/palisade/palisade-release.git
