@@ -169,7 +169,9 @@ if (PALISADE_FOUND)
     target_link_libraries(sheep ${PALISADE_LIBRARIES})
 endif(PALISADE_FOUND)
 
-
+if (TBB_FOUND)
+    target_link_libraries(sheep ${TBB_LIBRARIES})
+endif(TBB_FOUND)
 
 
 ####################################################################################
