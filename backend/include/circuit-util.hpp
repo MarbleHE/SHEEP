@@ -35,12 +35,21 @@ Circuit copy(const Circuit& C, NameGenT& name) {
     const Wire wire_copy = C_copy.add_input(name("i"));
     translate.insert({wire.get_name(), wire_copy});
   }
+  // TODO they forgot const inputs...
+  // new const inputs
+  for (const Wire wire : C.get_const_inputs()){
+      const Wire wire_copy = C_copy.add_const_input(name("c"));
+      translate.insert({wire.get_name(), wire_copy});
+  }
 
   // new assignments
   for (const Assignment assn : C.get_assignments()) {
     Assignment::WireList new_inputs;
     for (const Wire orig_input_wire : assn.get_inputs()) {
       new_inputs.emplace_back(translate.at(orig_input_wire.get_name()));
+    }
+    for (const Wire orig_const_input_wire : assn.get_const_inputs()){
+      new_inputs.emplace_back(translate.at(orig_const_input_wire.get_name()));
     }
     // the result wire of this assignment
     Wire assn_result =

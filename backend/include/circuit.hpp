@@ -239,6 +239,11 @@ class Circuit {
         throw UndefinedVariableError(assgn_in.get_name());
       }
     }
+    for (auto assgn_cin : assgn.get_const_inputs()) {
+      if (wire_names.count(assgn_cin.get_name()) == 0) {
+          throw UndefinedVariableError(assgn_cin.get_name());
+      }
+    }
 
     assignments.push_back(std::move(assgn));
 

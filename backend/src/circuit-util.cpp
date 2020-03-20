@@ -14,12 +14,22 @@ Circuit seq(const Circuit& first, const Circuit& second) {
   // inputs of 'first' are the inputs of the result
   for (auto in : first_copy.get_inputs()) result.add_input(in.get_name());
 
+  //TODO: they forgot const inputs...
+  for (auto cin : first_copy.get_const_inputs()) result.add_const_input(cin.get_name());
+  for (auto cin : second_copy.get_const_inputs()) result.add_const_input(cin.get_name());
+
   // assignments from the first circuit (those from the second
   // follow later)
   for (auto assn : first_copy.get_assignments()) {
-    result.add_assignment(assn.get_output().get_name(), assn.get_op(),
+    if (!assn.get_inputs().empty()) result.add_assignment(assn.get_output().get_name(), assn.get_op(),
                           assn.get_inputs());
+    if (!assn.get_const_inputs().empty()) result.add_assignment(assn.get_output().get_name(), assn.get_op(),
+                            assn.get_const_inputs());
   }
+  for (auto assn : second_copy.get_assignments()){
+      if (!assn.get_const_inputs().empty()) result.add_assignment(assn.get_output().get_name(), assn.get_op(), assn.get_const_inputs());
+  }
+
 
   // join the outputs of the first to the inputs of the second via the map
   // 'splice'
@@ -81,16 +91,24 @@ Circuit par(const Circuit& a, const Circuit& b) {
   Circuit b1 = copy(b, names);
 
   Circuit result;
-
   for (auto a_in : a1.get_inputs()) result.add_input(a_in.get_name());
+  for (auto a_cin : a1.get_const_inputs()) result.add_const_input(a_cin.get_name());
   for (auto b_in : b1.get_inputs()) result.add_input(b_in.get_name());
+  for (auto b_cin : b1.get_const_inputs()) result.add_const_input(b_cin.get_name());
 
-  for (auto a_assn : a1.get_assignments())
-    result.add_assignment(a_assn.get_output().get_name(), a_assn.get_op(),
-                          a_assn.get_inputs());
-  for (auto b_assn : b1.get_assignments())
-    result.add_assignment(b_assn.get_output().get_name(), b_assn.get_op(),
-                          b_assn.get_inputs());
+    //TODO: they forgot const ins... verify.
+    for (auto a_assn : a1.get_assignments()){
+      if (!a_assn.get_inputs().empty()) result.add_assignment(a_assn.get_output().get_name(), a_assn.get_op(),
+                            a_assn.get_inputs());
+      if (!a_assn.get_const_inputs().empty()) result.add_assignment(a_assn.get_output().get_name(), a_assn.get_op(), a_assn.get_const_inputs());
+  }
+
+  for (auto b_assn : b1.get_assignments()){
+      if (!b_assn.get_inputs().empty()) result.add_assignment(b_assn.get_output().get_name(), b_assn.get_op(),
+                            b_assn.get_inputs());
+      if (!b_assn.get_const_inputs().empty()) result.add_assignment(b_assn.get_output().get_name(), b_assn.get_op(), b_assn.get_const_inputs());
+  }
+
 
   for (auto a_out : a1.get_outputs()) result.set_output(a_out);
   for (auto b_out : b1.get_outputs()) result.set_output(b_out);

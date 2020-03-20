@@ -60,12 +60,14 @@ class ContextSealBFV : public Context<PlaintextT, seal::Ciphertext> {
                   "Unsupported security value in ContextSealBFV, expected 128, 192 or 256");
       }
       parms.set_coeff_modulus(seal::CoeffModulus::BFVDefault(m_N, sec_level));
-
-      try {
-          parms.set_plain_modulus(seal::PlainModulus::Batching(m_N, m_maxPlaintextBits+11)); //TODO: find out why it only works with +10 and higher... Make it always find a good prime
-      }
-      catch (const std::logic_error &e){ //if not enough primes found, try with one bit more (hacky)
-          parms.set_plain_modulus(seal::PlainModulus::Batching(m_N, m_maxPlaintextBits+12)); //TODO: find out why it only works with +10 and higher... Make it always find a good prime
+      int i_bits = 0;
+      while (parms.plain_modulus() == 0){
+          try {
+              parms.set_plain_modulus(seal::PlainModulus::Batching(m_N, m_maxPlaintextBits+i_bits)); //TODO: find out why it only works with +10 and higher...
+          }
+          catch (const std::logic_error &e){ //if not enough primes found, try with one bit more (hacky)
+              i_bits++;
+          }
       }
       m_context = seal::SEALContext::Create(parms);
       m_encoder = new seal::BatchEncoder(m_context);
