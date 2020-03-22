@@ -75,4 +75,40 @@ endif()
 
 link_libraries(pthread)
 
+
+####################################################################################
+## SHEEP
+##
+## SHEEP as a static library to compile against
+####################################################################################
+
+add_library(sheep
+        ${Sheep_SOURCE_DIR}/src/circuit.cpp
+        ${Sheep_SOURCE_DIR}/src/circuit-util.cpp
+        ${Sheep_SOURCE_DIR}/src/simple-circuits.cpp)
+
+if (HElib_FOUND)
+    target_link_libraries(sheep ${HElib_LIBRARIES} ${NTL_LIBRARIES} ${GMP_LIBRARIES})
+endif(HElib_FOUND)
+
+if (TFHE_FOUND)
+    target_link_libraries(sheep ${TFHE_LIBRARIES})
+endif(TFHE_FOUND)
+
+if (SEAL_FOUND)
+    target_link_libraries(sheep SEAL::seal)
+endif(SEAL_FOUND)
+
+if (LP_FOUND)
+    target_link_libraries(sheep ${LP_LIBRARIES} ${GMP_LIBRARIES})
+endif(LP_FOUND)
+
+if (PALISADE_FOUND)
+    target_link_libraries(sheep ${PALISADE_LIBRARIES})
+endif(PALISADE_FOUND)
+
+if (TBB_FOUND)
+    target_link_libraries(sheep ${TBB_LIBRARIES})
+endif(TBB_FOUND)
+
 add_subdirectory(applications)
