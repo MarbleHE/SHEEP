@@ -96,7 +96,7 @@ if (TFHE_FOUND)
 endif(TFHE_FOUND)
 
 if (SEAL_FOUND)
-    target_link_libraries(sheep SEAL::seal)
+    target_link_libraries(sheep ${SEAL_LIBRARIES})
 endif(SEAL_FOUND)
 
 if (LP_FOUND)
