@@ -35,8 +35,8 @@ class ContextClear
   typedef PlaintextT CiphertextEl;
 
   /// constructor
-  ContextClear() {
-    this->m_nslots = 100;  // reasonable default size
+  ContextClear(int nslots = 100) {
+    this->m_nslots = nslots;  // reasonable default size
     this->m_public_key_size = 0;
     this->m_private_key_size = 0;
     this->m_ciphertext_size = 0;
@@ -331,8 +331,8 @@ public:
   typedef PlaintextT CiphertextEl;
 
   /// constructor
-  ContextClear() {
-    this->m_nslots = 100;  // reasonable default size
+  ContextClear(int nslots = 100) {
+    this->m_nslots = nslots;  // reasonable default size
     this->m_public_key_size = 0;
     this->m_private_key_size = 0;
     this->m_ciphertext_size = 0;
@@ -417,8 +417,8 @@ public:
   typedef PlaintextT CiphertextEl;
 
   /// constructor
-  ContextClear() {
-    this->m_nslots = 100;  // reasonable default size
+  ContextClear(int nslots = 100) {
+    this->m_nslots = nslots;  // reasonable default size
     this->m_public_key_size = 0;
     this->m_private_key_size = 0;
     this->m_ciphertext_size = 0;
