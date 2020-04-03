@@ -1,4 +1,4 @@
-FROM ubuntu:16.04 AS stmario/sheep_base
+FROM ubuntu:16.04 AS sheep_base
 
 ### get wget git etc
 
