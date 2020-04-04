@@ -18,68 +18,31 @@
 namespace SHEEP {
   template <typename PlaintextT>
   class ContextPalisade :
-    public Context<PlaintextT, lbcrypto::Ciphertext<lbcrypto::Poly> >
+    public Context<PlaintextT, lbcrypto::Ciphertext<lbcrypto::DCRTPoly> >
   {
   protected:
     std::string m_paramSetName;
-    lbcrypto::CryptoContext<lbcrypto::Poly> m_PalisadeContext;
-    lbcrypto::LPKeyPair<lbcrypto::Poly> m_keyPair;
+    lbcrypto::CryptoContext<lbcrypto::DCRTPoly> m_PalisadeContext;
+    lbcrypto::LPKeyPair<lbcrypto::DCRTPoly> m_keyPair;
     long m;
   public:
     typedef PlaintextT Plaintext;
-    typedef lbcrypto::Ciphertext<lbcrypto::Poly> Ciphertext;
+    typedef lbcrypto::Ciphertext<lbcrypto::DCRTPoly> Ciphertext;
     typedef std::int64_t Plaintext64;
 
-    ContextPalisade()
+    ContextPalisade(int plaintextSize, int slotSize, int nMults, int multDepth)
     {
-      m = 22;
-      this->m_param_name_map.insert({"m", m});
-      // lbcrypto::PlaintextModulus p = 89; // we choose s.t. 2m|p-1 to leverage CRTArb
-      lbcrypto::PlaintextModulus p = 65957;
-      lbcrypto::BigInteger modulusQ("72385066601");
-      lbcrypto::BigInteger modulusP(p);
-      lbcrypto::BigInteger rootOfUnity("69414828251");
-      lbcrypto::BigInteger bigmodulus("77302754575416994210914689");
-      lbcrypto::BigInteger bigroot("76686504597021638023705542");
-
-      auto cycloPoly = lbcrypto::GetCyclotomicPolynomial<lbcrypto::BigVector>(m, modulusQ);
-
-      lbcrypto::ChineseRemainderTransformArb<lbcrypto::BigVector>::SetCylotomicPolynomial(cycloPoly, modulusQ);
-
-      float stdDev = 4;
-
-      std::shared_ptr<lbcrypto::ILParams> params(new lbcrypto::ILParams(m, modulusQ, rootOfUnity, bigmodulus, bigroot));
-
-      lbcrypto::BigInteger bigEvalMultModulus("37778931862957161710549");
-      lbcrypto::BigInteger bigEvalMultRootOfUnity("7161758688665914206613");
-      lbcrypto::BigInteger bigEvalMultModulusAlt("1461501637330902918203684832716283019655932547329");
-      lbcrypto::BigInteger bigEvalMultRootOfUnityAlt("570268124029534407621996591794583635795426001824");
-
-      auto cycloPolyBig = lbcrypto::GetCyclotomicPolynomial<lbcrypto::BigVector>(m, bigEvalMultModulus);
-      lbcrypto::ChineseRemainderTransformArb<lbcrypto::BigVector>::SetCylotomicPolynomial(cycloPolyBig, bigEvalMultModulus);
-
-      uint32_t batchSize = 8;
-
-      lbcrypto::EncodingParams encodingParams(new lbcrypto::EncodingParamsImpl(p, batchSize, lbcrypto::PackedEncoding::GetAutomorphismGenerator(m)));
-
-      lbcrypto::PackedEncoding::SetParams(m, encodingParams);
-
-      lbcrypto::BigInteger delta(modulusQ.DividedBy(modulusP));
-
-      m_PalisadeContext =
-        lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(
-          params, encodingParams, 1, stdDev, delta.ToString(), OPTIMIZED,
-          bigEvalMultModulus.ToString(), bigEvalMultRootOfUnity.ToString(),
-          1, 9, 1.006, bigEvalMultModulusAlt.ToString(),
-          bigEvalMultRootOfUnityAlt.ToString());
-
+        int plaintext_mod = pow(2,plaintextSize); //TODO: Automatically select so that primeModulus/plaintext_mod is an int.
+      m_PalisadeContext = lbcrypto::CryptoContextFactory<lbcrypto::DCRTPoly>::genCryptoContextBFVrns(
+              plaintext_mod, lbcrypto::HEStd_128_classic, 3.6, 0, (int) ceil(log2(nMults)), 0, OPTIMIZED, multDepth
+              );
       m_PalisadeContext->Enable(ENCRYPTION);
       m_PalisadeContext->Enable(SHE);
       m_keyPair = m_PalisadeContext->KeyGen();
       m_PalisadeContext->EvalSumKeyGen(m_keyPair.secretKey);
       m_PalisadeContext->EvalMultKeyGen(m_keyPair.secretKey);
 
-      this->m_nslots = m/2 - 1;
+      this->m_nslots = slotSize; //TODO: Put correct value. slotSize is virtual slot size required by computation. Instead, actual slot size of the scheme needs to be here for padding.
     }
 
     void configure() { /* nothing to do */ }
@@ -131,10 +94,10 @@ namespace SHEEP {
 
   // Dummy specializations to deal with types that Palisade doesn't support
   template <>
-  class ContextPalisade<double> : public Context<double, lbcrypto::Ciphertext<lbcrypto::Poly> > {
+  class ContextPalisade<double> : public Context<double, lbcrypto::Ciphertext<lbcrypto::DCRTPoly> > {
   public:
     typedef double Plaintext;
-    typedef lbcrypto::Ciphertext<lbcrypto::Poly>  Ciphertext;
+    typedef lbcrypto::Ciphertext<lbcrypto::DCRTPoly>  Ciphertext;
 
     ContextPalisade() {
       throw InputTypeNotSupported();
@@ -148,10 +111,10 @@ namespace SHEEP {
   };
 
   template <>
-  class ContextPalisade<std::complex<double> >: public Context<std::complex<double>, lbcrypto::Ciphertext<lbcrypto::Poly>> {
+  class ContextPalisade<std::complex<double> >: public Context<std::complex<double>, lbcrypto::Ciphertext<lbcrypto::DCRTPoly>> {
   public:
     typedef std::complex<double> Plaintext;
-    typedef lbcrypto::Ciphertext<lbcrypto::Poly>  Ciphertext;
+    typedef lbcrypto::Ciphertext<lbcrypto::DCRTPoly>  Ciphertext;
 
     ContextPalisade() {
       throw InputTypeNotSupported();
