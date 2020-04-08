@@ -1,4 +1,4 @@
-FROM tomaslaz/sheep_base:v1 as sheep
+FROM sheep_base as sheep_profile
 
 RUN apt-get -y install python3
 RUN apt-get update

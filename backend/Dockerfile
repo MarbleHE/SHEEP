@@ -1,4 +1,4 @@
-FROM turingsheep/sheep_base:v3 as sheep
+FROM sheep_base as sheep
 
 ENV LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/PALISADE/bin/lib:/PALISADE/third-party/lib"
 ENV LIBRARY_PATH "${LIBRARY_PATH}:/PALISADE/bin/lib"

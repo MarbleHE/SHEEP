@@ -1,5 +1,12 @@
 # How to profile SHEEP backend
 
+### 0. Build Sheep Base image
+
+```
+cd SHEEP/backend
+docker build -t sheep_base:latest -f Dockerfile_sheep_base .
+```
+
 ### 1. Build Dockerfile_profile image
 
 ```
