@@ -1,0 +1,12 @@
+FROM sheep_base as sheep_library
+
+ADD applications SHEEP/backend/applications
+ADD cmake SHEEP/backend/cmake
+ADD CMakeLists.txt SHEEP/backend/CMakeLists.txt
+ADD include SHEEP/backend/include
+ADD src SHEEP/backend/src
+ADD tests SHEEP/backend/tests
+
+RUN rm -fr SHEEP/backend/build; mkdir SHEEP/backend/build
+
+RUN cd SHEEP/backend/build; export CC=gcc-9; export CXX=g++-9; cmake ../

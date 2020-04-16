@@ -5,8 +5,8 @@ services:
   sheep-server:
     container_name: sheep_sheep-server_1
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: backend
+      dockerfile: backend/Dockerfile_server
     command: applications/run-sheep-server
     ports:
      - "34568:34568"

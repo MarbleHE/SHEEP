@@ -1,4 +1,4 @@
-FROM sheep_base as sheep
+FROM sheep_base as sheep_server
 
 ENV LD_LIBRARY_PATH "${LD_LIBRARY_PATH}:/PALISADE/bin/lib:/PALISADE/third-party/lib"
 ENV LIBRARY_PATH "${LIBRARY_PATH}:/PALISADE/bin/lib"
@@ -9,12 +9,12 @@ ENV CMAKE_INCLUDE_PATH "/PALISADE/src/pke/lib/:/PALISADE/src/:/PALISADE/src/core
 ENV CPLUS_INCLUDE_PATH "/PALISADE/src/pke/lib/:/PALISADE/src/:/PALISADE/src/core/lib/:/PALISADE/third-party/include/"
 
 
-ADD backend/applications SHEEP/backend/applications
-ADD backend/cmake SHEEP/backend/cmake
-ADD backend/CMakeLists.txt SHEEP/backend/CMakeLists.txt
-ADD backend/include SHEEP/backend/include
-ADD backend/src SHEEP/backend/src
-ADD backend/tests SHEEP/backend/tests
+ADD applications SHEEP/backend/applications
+ADD cmake SHEEP/backend/cmake
+ADD CMakeLists.txt SHEEP/backend/CMakeLists.txt
+ADD include SHEEP/backend/include
+ADD src SHEEP/backend/src
+ADD tests SHEEP/backend/tests
 
 RUN rm -fr SHEEP/backend/build; mkdir SHEEP/backend/build
 
