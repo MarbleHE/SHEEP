@@ -18,7 +18,7 @@ ADD backend/tests SHEEP/backend/tests
 
 RUN rm -fr SHEEP/backend/build; mkdir SHEEP/backend/build
 
-RUN cd SHEEP/backend/build; export CC=gcc-7; export CXX=g++-7; cmake ../
+RUN cd SHEEP/backend/build; export CC=gcc-9; export CXX=g++-9; cmake ../
 
 RUN cd SHEEP/backend/build; make VERBOSE=1 run-sheep-server
 
