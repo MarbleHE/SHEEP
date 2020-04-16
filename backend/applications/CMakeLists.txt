@@ -80,12 +80,6 @@ endif(HElib_FOUND)
      add_test(NAME seal-example COMMAND $<TARGET_FILE:seal-example>)
      target_link_libraries(seal-example
                              ${SEAL_LIBRARIES})
-
-     add_executable(seal-param-selector
-                      utilities/seal-param-selector.cpp)
-     target_link_libraries(seal-param-selector
-                             ${SEAL_LIBRARIES}
- 			    pthread)
  endif(SEAL_FOUND)
 
 
