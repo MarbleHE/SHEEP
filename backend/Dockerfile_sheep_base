@@ -57,7 +57,7 @@ RUN cd casablanca/Release; mkdir build.debug; cd build.debug; export CC=gcc-9; e
 
 ###### build optional SEAL dependencies (improve performance)
 RUN apt-get -y install libmsgsl-dev
-RUN git clone https://github.com/microsoft/GSL.git
+RUN apt-get -y install zlib1g-dev
 
 ###### build SEAL
 RUN git clone https://github.com/microsoft/SEAL.git

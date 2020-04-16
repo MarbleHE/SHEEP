@@ -136,15 +136,21 @@ add_test(NAME sheep-cl COMMAND $<TARGET_FILE:sheep-cl>)
 ##
 ### The "run-sheep-server" executable, a REST API with endpoints to specify circuits, HE libraries etc and run tests.
 ####################################################################################
+# C++ REST API for interaction with web app - also needs openSSL, Boost, Threads
+find_package(OpenSSL REQUIRED)
+set(Boost_USE_STATIC_LIBS ON)
+set(Boost_USE_MULTITHREADED ON)
+find_package(cpprestsdk REQUIRED)
+find_package(Boost COMPONENTS system filesystem thread date_time program_options REQUIRED)
+include_directories(${Boost_INCLUDE_DIRS})
+find_package(Threads REQUIRED)
 
 add_executable(run-sheep-server
     	       server/run-sheep-server.cpp
                ${CMAKE_SOURCE_DIR}/src/sheep-server.cpp
                ${CMAKE_SOURCE_DIR}/src/circuit.cpp)
 
-target_link_libraries(run-sheep-server cpprestsdk::cpprest ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
-
-message(STATUS "*****&&&&&&&&&&&*********** ntl ${NTL_LIBRARIES}")
+target_link_libraries(run-sheep-server cpprestsdk::cpprest OpenSSL::Crypto OpenSSL::SSL ${CMAKE_THREAD_LIBS_INIT} ${Boost_LIBRARIES})
 
 if (HElib_FOUND)
   target_link_libraries(run-sheep-server ${HElib_LIBRARIES} ${NTL_LIBRARIES} ${GMP_LIBRARIES})

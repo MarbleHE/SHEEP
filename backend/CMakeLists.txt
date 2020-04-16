@@ -4,19 +4,6 @@ project (Sheep)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(CMAKE_INCLUDE_PATH "${CMAKE_SOURCE_DIR}/lib/HElib/src/")
-set(CMAKE_LIBRARY_PATH "${CMAKE_SOURCE_DIR}/lib/HElib/src/")
-
-# C++ REST API for interaction with web app - also needs openSSL, Boost, Threads
-set(OPENSSL_ROOT_DIR ${OPENSSL_ROOT_DIR} /usr/local/opt/openssl)
-find_package(OpenSSL)
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-find_package(cpprestsdk REQUIRED)
-find_package(Boost COMPONENTS system filesystem thread date_time program_options REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
-find_package(Threads REQUIRED)
-
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
 
 enable_testing()
@@ -66,6 +53,7 @@ find_package(PALISADE)
 if (PALISADE_FOUND)
   include_directories(SYSTEM ${PALISADE_INCLUDE_DIRS})
   link_libraries(PALISADEcore)
+  link_libraries(PALISADEpke)
   add_definitions(-DHAVE_PALISADE)
 endif()
 
