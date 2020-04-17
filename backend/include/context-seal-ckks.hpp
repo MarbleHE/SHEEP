@@ -6,6 +6,7 @@
 #include <complex>
 #include <sstream>
 #include <type_traits>
+#include <vector>
 #include "bits.hpp"
 #include "circuit.hpp"
 #include "context.hpp"
@@ -67,7 +68,17 @@ class ContextSealCKKS<double> : public Context<double, seal::Ciphertext> {
     parms.set_poly_modulus_degree(m_N);
     this->m_scale = pow(2.0, m_scale_bits);
 
-    parms.set_coeff_modulus(seal::CoeffModulus::Create(m_N, { 40, 40, 40, 40, 40 }));
+    //make bit vector with remaining budget...
+    int mbc = seal::CoeffModulus::MaxBitCount(m_N) - 2*60;
+    int ncoeffs = floor(mbc/40);
+    std::vector<int> bitsizes;
+    bitsizes.push_back(60);
+    for (size_t i = 0; i < ncoeffs; ++i) {
+      bitsizes.push_back(40);
+    }
+    bitsizes.push_back(60);
+
+    parms.set_coeff_modulus(seal::CoeffModulus::Create(m_N, bitsizes));
 
     m_context = seal::SEALContext::Create(parms);
 
@@ -225,7 +236,17 @@ class ContextSealCKKS<std::complex<double> >: public Context<std::complex<double
     parms.set_poly_modulus_degree(m_N);
     this->m_scale = pow(2.0, m_scale_bits);
 
-    parms.set_coeff_modulus(seal::CoeffModulus::Create(m_N, { 40, 40, 40, 40, 40 }));
+    //make bit vector with remaining budget...
+    int mbc = seal::CoeffModulus::MaxBitCount(m_N) - 2*60;
+    int ncoeffs = floor(mbc/40);
+    std::vector<int> bitsizes;
+    bitsizes.push_back(60);
+    for (size_t i = 0; i < ncoeffs; ++i) {
+      bitsizes.push_back(40);
+    }
+    bitsizes.push_back(60);
+
+    parms.set_coeff_modulus(seal::CoeffModulus::Create(m_N, bitsizes));
 
     m_context = seal::SEALContext::Create(parms);
 
