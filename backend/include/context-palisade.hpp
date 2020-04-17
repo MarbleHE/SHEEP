@@ -30,12 +30,13 @@ namespace SHEEP {
     typedef lbcrypto::Ciphertext<lbcrypto::Poly> Ciphertext;
     typedef std::int64_t Plaintext64;
 
-    ContextPalisade()
+    ContextPalisade(int plaintextSize = -1, int slotSize = -1, int nMults = -1, int multDepth = -1)
     {
       m = 22;
       this->m_param_name_map.insert({"m", m});
       // lbcrypto::PlaintextModulus p = 89; // we choose s.t. 2m|p-1 to leverage CRTArb
-      lbcrypto::PlaintextModulus p = 65957;
+      //TODO: Automatically select so that primeModulus/plaintext_mod is an int.
+      lbcrypto::PlaintextModulus p = plaintextSize == -1 ?  65957 : pow(2,plaintextSize);
       lbcrypto::BigInteger modulusQ("72385066601");
       lbcrypto::BigInteger modulusP(p);
       lbcrypto::BigInteger rootOfUnity("69414828251");
@@ -58,7 +59,7 @@ namespace SHEEP {
       auto cycloPolyBig = lbcrypto::GetCyclotomicPolynomial<lbcrypto::BigVector>(m, bigEvalMultModulus);
       lbcrypto::ChineseRemainderTransformArb<lbcrypto::BigVector>::SetCylotomicPolynomial(cycloPolyBig, bigEvalMultModulus);
 
-      uint32_t batchSize = 8;
+      uint32_t batchSize = slotSize == -1 ? 8 : slotSize;
 
       lbcrypto::EncodingParams encodingParams(new lbcrypto::EncodingParamsImpl(p, batchSize, lbcrypto::PackedEncoding::GetAutomorphismGenerator(m)));
 
@@ -66,12 +67,16 @@ namespace SHEEP {
 
       lbcrypto::BigInteger delta(modulusQ.DividedBy(modulusP));
 
-      m_PalisadeContext =
-        lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(
-          params, encodingParams, 1, stdDev, delta.ToString(), OPTIMIZED,
-          bigEvalMultModulus.ToString(), bigEvalMultRootOfUnity.ToString(),
-          1, 9, 1.006, bigEvalMultModulusAlt.ToString(),
-          bigEvalMultRootOfUnityAlt.ToString());
+      if (nMults == -1) {
+        m_PalisadeContext =
+            lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(
+                params, encodingParams, 1, stdDev, delta.ToString(), OPTIMIZED,
+                bigEvalMultModulus.ToString(), bigEvalMultRootOfUnity.ToString(),
+                1, 9, 1.006, bigEvalMultModulusAlt.ToString(),
+                bigEvalMultRootOfUnityAlt.ToString());
+      } else {
+        m_PalisadeContext = lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(encodingParams,lbcrypto::HEStd_128_classic,1,3.6,0,(int) ceil(log2(nMults)),0,OPTIMIZED);
+      }
 
       m_PalisadeContext->Enable(ENCRYPTION);
       m_PalisadeContext->Enable(SHE);
@@ -79,8 +84,14 @@ namespace SHEEP {
       m_PalisadeContext->EvalSumKeyGen(m_keyPair.secretKey);
       m_PalisadeContext->EvalMultKeyGen(m_keyPair.secretKey);
 
-      this->m_nslots = m/2 - 1;
+      if (slotSize == -1) {
+        this->m_nslots = m/2 - 1;
+      } else {
+        //TODO: Get real number of slots
+        this->m_nslots = slotSize;
+      }
     }
+
 
     void configure() { /* nothing to do */ }
 
