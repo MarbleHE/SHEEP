@@ -10,6 +10,7 @@ int main(void) {
   //// instantiate the Circuit Repository
   CircuitRepo cr;
 
+  //TODO: After updating for modern HElib, fix the example
   ///  Circuit C = cr.get_circuit_by_name("TestCircuit1");
 
   // Circuit c2 = cr.create_circuit(Gate::Add, 3);

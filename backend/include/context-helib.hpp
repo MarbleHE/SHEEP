@@ -12,9 +12,10 @@ NTL_CLIENT
 
 #include "circuit.hpp"
 #include "context.hpp"
-
+#include "Context.h"
 #include "Ctxt.h"
 #include "EncryptedArray.h"
+
 #include "FHE.h"
 
 #include "binaryArith.h"
@@ -84,14 +85,13 @@ class ContextHElib : public Context<PlaintextT, CiphertextT> {
     /// Set all the other parameters.
 
     long mValues[][15] = {
-        // { p, phi(m),   m,   d, m1, m2, m3,    g1,   g2,   g3, ord1,ord2,ord3,
-        // B,c}
-        {2, 48, 105, 12, 3, 35, 0, 71, 76, 0, 2, 2, 0, 25, 2},
-        {2, 600, 1023, 10, 11, 93, 0, 838, 584, 0, 10, 6, 0, 25, 2},
-        {2, 2304, 4641, 24, 7, 3, 221, 3979, 3095, 3760, 6, 2, -8, 25, 3},
-        {2, 15004, 15709, 22, 23, 683, 0, 4099, 13663, 0, 22, 31, 0, 25, 3},
-        {2, 27000, 32767, 15, 31, 7, 151, 11628, 28087, 25824, 30, 6, -10, 28,
-         4}};
+        // { p, phi(m),   m,   d, m1, m2, m3,    g1,   g2,   g3, ord1,ord2,ord3,   B, c}
+        {2, 48,    105,   12, 3,    35,  0,   71,    76,    0,     2,   2,   0,   25, 2},    //0: 4 slots      (2x2)
+        {2, 600,   1023,  10, 11,   93,  0,   838,   584,   0,     10,  6,   0,   25, 2},   //1: 60 slots     (10x6)
+        {2, 2304,  4641,  24, 7,    3,   221, 3979,  3095,  3760,  6,   2,   -8,  25, 3},   //2: 96 slots     (6x2x8)
+        {2, 15004, 15709, 22, 23,   683, 0,   4099,  13663, 0,     22,  31,  0,   25, 3},  //6: 682 slots    (22x31)
+        {2, 27000, 32767, 15, 31,   7,   151, 11628, 28087, 25824, 30,  6,   -10, 28, 4}  //7: 1800 slots   (30x6x10)
+        };
 
     long* vals = mValues[m_param_set];
     //// if parameters were not set explicitly in a parameters file, take the
@@ -136,8 +136,8 @@ class ContextHElib : public Context<PlaintextT, CiphertextT> {
         m_L = 3 + NTL::NumBits(m_bitwidth + 2);
     }
     /// initialize HElib context
-    m_helib_context = new FHEcontext(m_m, m_p, 1, gens, ords);
-    m_helib_context->bitsPerLevel = m_B;
+    m_helib_context = new helib::Context(m_m, m_p, 1, gens, ords);
+    // m_helib_context->bitsPerLevel = m_B; //TODO: levels
     /// modify context, add primes to modulus chain
     buildModChain(*m_helib_context, m_L, m_c, 8);
 
@@ -150,7 +150,7 @@ class ContextHElib : public Context<PlaintextT, CiphertextT> {
     buildUnpackSlotEncoding(m_unpackSlotEncoding, *(m_helib_context->ea));
 
     /// create secret key structure
-    m_secretKey = new FHESecKey(*m_helib_context);
+    m_secretKey = new helib::SecKey(*m_helib_context);
 
     m_publicKey = m_secretKey;  //// points to the same place
 
@@ -166,7 +166,7 @@ class ContextHElib : public Context<PlaintextT, CiphertextT> {
 
     if (m_bootstrap) m_secretKey->genRecryptData();
 
-    m_ea = new EncryptedArray(*m_helib_context);
+    m_ea = new helib::EncryptedArray(*m_helib_context);
 
     this->m_nslots = m_ea->size();
   };
@@ -202,12 +202,12 @@ class ContextHElib : public Context<PlaintextT, CiphertextT> {
   long m_ord1;
   long m_ord2;
   long m_ord3;
-  EncryptedArray* m_ea;
-  FHESecKey* m_secretKey;
-  const FHEPubKey* m_publicKey;
-  FHEcontext* m_helib_context;
+  helib::EncryptedArray* m_ea;
+  helib::SecKey* m_secretKey;
+  const helib::PubKey* m_publicKey;
+  helib::Context* m_helib_context;
   int m_bitwidth;
-  std::vector<zzX> m_unpackSlotEncoding;
+  std::vector<helib::zzX> m_unpackSlotEncoding;
   bool m_bootstrap;
   long m_bootstrapl;  /// long version of the bootstrap flag to allow it to be
                       /// settable from param_name_map
@@ -218,10 +218,10 @@ class ContextHElib : public Context<PlaintextT, CiphertextT> {
 ///  ContextHElib_F2 -  use p=2, do everything with arrays of Ciphertext,
 ///  and binary operations for add, multiply, compare etc.
 template <typename PlaintextT>
-class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
+ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<helib::Ctxt> > {
  public:
   typedef PlaintextT Plaintext;
-  typedef NTL::Vec<Ctxt> Ciphertext;
+  typedef NTL::Vec<helib::Ctxt> Ciphertext;
 
   ContextHElib_F2(
       long param_set = 0,         // parameter set, from 0 (tiny) to 4 (huge)
@@ -245,7 +245,7 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
           "that can be done at a time");
     }
 
-    Ctxt mu(*(this->m_publicKey), (long)this->m_nslots);
+    helib::Ctxt mu(*(this->m_publicKey), (long)this->m_nslots);
     Ciphertext ct;
 
     resize(ct, this->m_bitwidth, mu);
@@ -268,7 +268,7 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     std::vector<Plaintext> pt_transformed =
         std::vector<Plaintext>(this->m_nslots);
 
-    decryptBinaryNums(ct_decrypt, CtPtrs_VecCt(ct), *(this->m_secretKey),
+    decryptBinaryNums(ct_decrypt, helib::CtPtrs_VecCt(ct), *(this->m_secretKey),
                       *(this->m_ea));
 
     for (int i = 0; i < this->m_nslots; i++) {
@@ -292,7 +292,7 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     /// bootstrapping method copied from HElib's Test_binaryCompare
     if (this->m_bootstrap) {
       for (int i = 0; i < this->m_bitwidth; ++i) {
-        a[i].modDownToLevel(5);
+        //a[i].modDownToLevel(5); //TODO: Still uses old HElib system of levels
       }
     }
 
@@ -300,7 +300,7 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     Ciphertext output;
 
     for (int i = 0; i < this->m_bitwidth; ++i) {
-      Ctxt abit = a[i];
+      helib::Ctxt abit = a[i];
       abit.addConstant(to_ZZX(1L));
       output.append(abit);
     }
@@ -327,8 +327,8 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     /// OR(a,b) = XOR( XOR(a,b), AND(a,b))
     Ciphertext output;
 
-    Ctxt a1 = a[0];
-    Ctxt a2 = a[0];
+    helib::Ctxt a1 = a[0];
+    helib::Ctxt a2 = a[0];
     a1 += b[0];  // XOR(a,b)
     a2 *= b[0];  // AND(a,b)
     a1 += a2;    // XOR the previous two lines
@@ -337,11 +337,11 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
   }
 
   Ciphertext Compare_unsigned(Ciphertext a, Ciphertext b) {
-    Ctxt mu(*(this->m_publicKey));
-    Ctxt ni(*(this->m_publicKey));
+    helib::Ctxt mu(*(this->m_publicKey));
+    helib::Ctxt ni(*(this->m_publicKey));
     Ciphertext cmax, cmin;
-    CtPtrs_VecCt wMin(cmin), wMax(cmax);  /// wrappers around output vectors
-    compareTwoNumbers(wMax, wMin, mu, ni, CtPtrs_VecCt(a), CtPtrs_VecCt(b),
+    helib::CtPtrs_VecCt wMin(cmin), wMax(cmax);  /// wrappers around output vectors
+    compareTwoNumbers(wMax, wMin, mu, ni, helib::CtPtrs_VecCt(a), helib::CtPtrs_VecCt(b),
                       &(this->m_unpackSlotEncoding));
     /// mu is now a Ctxt which is the encryption of 1 if a>b and 0 otherwise.
     /// but we need to put it into NTL::Vec<Ctxt> as that is our new
@@ -356,7 +356,7 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     Ciphertext b_minus_a = Subtract(b, a);
     Ciphertext output;
 
-    Ctxt sign_bit =
+    helib::Ctxt sign_bit =
         b_minus_a[this->m_bitwidth - 1];  /// is sign-bit set?  if yes, b
     output.append(sign_bit);
     return output;
@@ -365,8 +365,8 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
   Ciphertext Compare(Ciphertext a, Ciphertext b) {
     if (this->m_bootstrap) {
       for (int i = 0; i < this->m_bitwidth; ++i) {
-        a[i].modDownToLevel(5);
-        b[i].modDownToLevel(5);
+       // a[i].modDownToLevel(5); //TODO: Replace old level system
+       // b[i].modDownToLevel(5); //TODO: Replace old level system
       }
     }
     if (this->m_signed_plaintext)
@@ -381,14 +381,14 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
 
     if (this->m_bootstrap) {
       for (int i = 0; i < this->m_bitwidth; ++i) {
-        a[i].modDownToLevel(5);
+        // a[i].modDownToLevel(5); //TODO: Replace old level system
       }
     }
 
     Ciphertext output;
     Ciphertext b_neg = Negate(b);
-    CtPtrs_VecCt wout(output);
-    addTwoNumbers(wout, CtPtrs_VecCt(a), CtPtrs_VecCt(b_neg), this->m_bitwidth,
+    helib::CtPtrs_VecCt wout(output);
+    addTwoNumbers(wout, helib::CtPtrs_VecCt(a), helib::CtPtrs_VecCt(b_neg), this->m_bitwidth,
                   &(this->m_unpackSlotEncoding));
     return output;
   }
@@ -396,14 +396,14 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
   Ciphertext Add(Ciphertext a, Ciphertext b) {
     if (this->m_bootstrap) {
       for (int i = 0; i < this->m_bitwidth; ++i) {
-        a[i].modDownToLevel(5);
+       // a[i].modDownToLevel(5); //TODO: Replace old level system
       }
     }
 
     Ciphertext sum;
-    CtPtrs_VecCt wsum(sum);
+    helib::CtPtrs_VecCt wsum(sum);
 
-    addTwoNumbers(wsum, CtPtrs_VecCt(a), CtPtrs_VecCt(b), this->m_bitwidth,
+    addTwoNumbers(wsum, helib::CtPtrs_VecCt(a), helib::CtPtrs_VecCt(b), this->m_bitwidth,
                   &(this->m_unpackSlotEncoding));
 
     return sum;
@@ -412,14 +412,14 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
   Ciphertext Multiply(Ciphertext a, Ciphertext b) {
     if (this->m_bootstrap) {
       for (int i = 0; i < this->m_bitwidth; ++i) {
-        a[i].modDownToLevel(5);
+        // a[i].modDownToLevel(5); //TODO: Replace old level system
       }
     }
 
     Ciphertext product;
-    CtPtrs_VecCt wprod(product);
+    helib::CtPtrs_VecCt wprod(product);
 
-    multTwoNumbers(wprod, CtPtrs_VecCt(a), CtPtrs_VecCt(b), false,
+    multTwoNumbers(wprod, helib::CtPtrs_VecCt(a), helib::CtPtrs_VecCt(b), false,
                    this->m_bitwidth, &(this->m_unpackSlotEncoding));
 
     return product;
@@ -428,8 +428,8 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
   Ciphertext Select(Ciphertext s, Ciphertext a, Ciphertext b) {
     if (this->m_bootstrap) {
       for (int i = 0; i < this->m_bitwidth; ++i) {
-        a[i].modDownToLevel(5);
-        b[i].modDownToLevel(5);
+        // a[i].modDownToLevel(5); //TODO: levels
+        // b[i].modDownToLevel(5); //TODO: levels
       }
     }
     /// s is 0 or 1
@@ -437,9 +437,9 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     Ciphertext output;
 
     for (int i = 0; i < this->m_bitwidth; ++i) {
-      Ctxt sbit = s[0];
-      Ctxt abit = a[i];
-      Ctxt bbit = b[i];
+      helib::Ctxt sbit = s[0];
+      helib::Ctxt abit = a[i];
+      helib::Ctxt bbit = b[i];
       abit *= sbit;
       sbit.addConstant(to_ZZX(-1L));
       sbit.multByConstant(to_ZZX(-1L));
@@ -459,7 +459,7 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
     if (n > 0) n = n - this->m_ninputs;
     /// loop over all bits
     for (int j = 0; j < this->m_bitwidth; j++) {
-      Ctxt result_bit(a[j]);
+      helib::Ctxt result_bit(a[j]);
       this->m_ea->rotate(result_bit, n);
       result.append(result_bit);
     }
@@ -475,10 +475,10 @@ class ContextHElib_F2 : public ContextHElib<PlaintextT, NTL::Vec<Ctxt> > {
 
 // (dummy) specializations for double and complex<double>
 template <>
-class ContextHElib_F2<double> : public Context<double, NTL::Vec<Ctxt> > {
+class ContextHElib_F2<double> : public Context<double, NTL::Vec<helib::Ctxt> > {
  public:
   typedef double Plaintext;
-  typedef NTL::Vec<Ctxt>  Ciphertext;
+  typedef NTL::Vec<helib::Ctxt>  Ciphertext;
 
   ContextHElib_F2() {
     throw InputTypeNotSupported();
@@ -492,10 +492,10 @@ class ContextHElib_F2<double> : public Context<double, NTL::Vec<Ctxt> > {
 };
 
 template <>
-class ContextHElib_F2<std::complex<double> >: public Context<std::complex<double>, NTL::Vec<Ctxt> > {
+class ContextHElib_F2<std::complex<double> >: public Context<std::complex<double>, NTL::Vec<helib::Ctxt> > {
  public:
   typedef std::complex<double> Plaintext;
-  typedef NTL::Vec<Ctxt>  Ciphertext;
+  typedef NTL::Vec<helib::Ctxt>  Ciphertext;
 
   ContextHElib_F2() {
     throw InputTypeNotSupported();
@@ -513,10 +513,10 @@ class ContextHElib_F2<std::complex<double> >: public Context<std::complex<double
 //// ContextHElib_Fp  - use integer plaintext space, e.g. p=65537
 
 template <typename PlaintextT>
-class ContextHElib_Fp : public ContextHElib<PlaintextT, Ctxt> {
+class ContextHElib_Fp : public ContextHElib<PlaintextT, helib::Ctxt> {
  public:
   typedef PlaintextT Plaintext;
-  typedef Ctxt Ciphertext;
+  typedef helib::Ctxt Ciphertext;
 
   ContextHElib_Fp(
       long p = 65537,             // plaintext modulus
@@ -646,10 +646,10 @@ class ContextHElib_Fp : public ContextHElib<PlaintextT, Ctxt> {
 
 // (dummy) specializations for double and complex<double>
 template <>
-class ContextHElib_Fp<double> : public Context<double, Ctxt > {
+class ContextHElib_Fp<double> : public Context<double, helib::Ctxt > {
  public:
   typedef double Plaintext;
-  typedef Ctxt  Ciphertext;
+  typedef helib::Ctxt  Ciphertext;
 
   ContextHElib_Fp() {
     throw InputTypeNotSupported();
@@ -663,10 +663,10 @@ class ContextHElib_Fp<double> : public Context<double, Ctxt > {
 };
 
 template <>
-class ContextHElib_Fp<std::complex<double> >: public Context<std::complex<double>, Ctxt > {
+class ContextHElib_Fp<std::complex<double> >: public Context<std::complex<double>, helib::Ctxt > {
  public:
   typedef std::complex<double> Plaintext;
-  typedef Ctxt  Ciphertext;
+  typedef helib::Ctxt  Ciphertext;
 
   ContextHElib_Fp() {
     throw InputTypeNotSupported();
