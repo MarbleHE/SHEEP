@@ -21,8 +21,75 @@ class ContextSealBFV : public Context<PlaintextT, seal::Ciphertext> {
       typename std::conditional<std::is_signed<Plaintext>::value, std::int64_t,
                                 std::uint64_t>::type Plaintext64;
 
-  // constructors
+  /// constructors
 
+  /// \param maxPlaintextBits Maximum number of bits which will be achieved in a result
+  /// \param security
+  /// \param N
+  /// \param b useless, this is just there to not overwrite the old constructor with the same signature
+  ContextSealBFV(
+          long maxPlaintextBits,
+          long security =
+          128, /* This is the security level (either 128 or 192).
+                  We limit ourselves to 2 predefined choices,
+                  as coefficient modules are preset by SEAL for these choices.*/
+          long N = 4096, bool b = false)
+          : m_N(N), m_security(security), m_maxPlaintextBits(maxPlaintextBits) {
+      this->m_param_name_map.insert({"N", m_N});
+      this->m_param_name_map.insert({"maxPlaintextBits", m_maxPlaintextBits});
+      this->m_param_name_map.insert({"Security", m_security});
+
+      this->m_private_key_size = 0;
+      this->m_public_key_size = 0;
+      this->m_ciphertext_size = 0;
+
+      std::stringstream x;
+      x << "1x^" << m_N << " + 1";
+      this->m_poly_modulus = x.str();
+      seal::EncryptionParameters parms(seal::scheme_type::BFV);
+      parms.set_poly_modulus_degree(m_N);
+      seal::sec_level_type sec_level;
+      if (m_security == 128) {
+          sec_level = seal::sec_level_type::tc128;
+      } else if (m_security == 192) {
+          sec_level = seal::sec_level_type::tc192;
+      } else if (m_security == 256) {
+          sec_level = seal::sec_level_type::tc256;
+      } else {
+          throw std::invalid_argument(
+                  "Unsupported security value in ContextSealBFV, expected 128, 192 or 256");
+      }
+      parms.set_coeff_modulus(seal::CoeffModulus::BFVDefault(m_N, sec_level));
+      int i_bits = 0;
+      while (parms.plain_modulus() == 0){
+          try {
+              parms.set_plain_modulus(seal::PlainModulus::Batching(m_N, m_maxPlaintextBits+i_bits)); //TODO: find out why it only works with +10 and higher...
+          }
+          catch (const std::logic_error &e){ //if not enough primes found, try with one bit more (hacky)
+              i_bits++;
+          }
+      }
+      m_context = seal::SEALContext::Create(parms);
+      m_encoder = new seal::BatchEncoder(m_context);
+
+      seal::KeyGenerator keygen(m_context);
+      m_public_key = keygen.public_key();
+      m_secret_key = keygen.secret_key();
+      m_galois_keys = keygen.galois_keys();
+      m_relin_keys = keygen.relin_keys();
+
+      //// sizes of objects, in bytes
+      this->m_public_key_size = sizeof(m_public_key);
+      this->m_private_key_size = sizeof(m_secret_key);
+
+      m_encryptor = new seal::Encryptor(m_context, m_public_key);
+      m_evaluator = new seal::Evaluator(m_context);
+      m_decryptor = new seal::Decryptor(m_context, m_secret_key);
+
+      this->m_nslots = m_encoder->slot_count() / 2;
+  }
+
+  /// This was the original SHEEP constructor, setting some standard stuff.
   ContextSealBFV(
       long plaintext_modulus =
           40961,  // for slots, this should be a prime congruent to 1 (mod 2N)
@@ -210,6 +277,7 @@ class ContextSealBFV : public Context<PlaintextT, seal::Ciphertext> {
   long m_security;
   long m_N;
   long m_plaintext_modulus;
+  long m_maxPlaintextBits;
   std::shared_ptr<seal::SEALContext> m_context;
   seal::BatchEncoder* m_encoder;
   seal::PublicKey m_public_key;
