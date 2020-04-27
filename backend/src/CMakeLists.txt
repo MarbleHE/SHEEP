@@ -53,7 +53,9 @@ if (TBB_FOUND)
     target_compile_definitions(sheep PUBLIC -DHAVE_TBB)
 endif()
 
-target_link_libraries(sheep PUBLIC pthread)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(sheep PUBLIC Threads::Threads)
 
 
 

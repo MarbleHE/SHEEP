@@ -6,7 +6,9 @@ include_directories(${SEAL_INCLUDE_DIRS})
 include_directories(${PALISADE_INCLUDE_DIRS})
 include_directories(${LB_INCLUDE_DIRS})
 include_directories(${TBB_INCLUDE_DIRS})
-link_libraries(pthread)
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+link_libraries(Threads::Threads)
 
 ####################################################################################
 ## CLEAR

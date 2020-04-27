@@ -10,7 +10,7 @@ find_dependency(SEAL REQUIRED)
 find_dependency(LP REQUIRED)
 find_dependency(PALISADE REQUIRED)
 find_dependency(TBB REQUIRED)
-find_dependency(pthread REQUIRED)
+find_dependency(Threads REQUIRED)
 
 
 # Any extra setup
