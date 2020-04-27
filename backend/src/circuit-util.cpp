@@ -1,4 +1,4 @@
-#include "circuit-util.hpp"
+#include "sheep/circuit-util.hpp"
 
 Circuit seq(const Circuit& first, const Circuit& second) {
   NameGenerator names;

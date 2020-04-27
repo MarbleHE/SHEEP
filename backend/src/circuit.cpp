@@ -1,8 +1,8 @@
-#include "circuit.hpp"
 #include <map>
 #include <sstream>
 #include <utility>
-#include "all_equal.hpp"
+#include "sheep/circuit.hpp"
+#include "sheep/all_equal.hpp"
 
 // Wires are equal iff their names are the same
 bool operator==(const Wire &a, const Wire &b) {

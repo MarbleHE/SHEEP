@@ -2,8 +2,8 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-lp.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/context-lp.hpp"
+#include "sheep/simple-circuits.hpp"
 
 using namespace SHEEP;
 typedef ContextLP<bool>::Plaintext Plaintext;

@@ -2,8 +2,8 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-tfhe.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/context-tfhe.hpp"
+#include "sheep/simple-circuits.hpp"
 
 using namespace SHEEP;
 typedef ContextTFHE<bool>::Plaintext Plaintext;

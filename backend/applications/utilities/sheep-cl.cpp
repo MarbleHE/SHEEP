@@ -16,7 +16,7 @@
 #include <map>
 #include <memory>
 
-#include "context-clear.hpp"
+#include "sheep/context-clear.hpp"
 #ifdef HAVE_HElib
 #include "context-helib.hpp"
 #endif

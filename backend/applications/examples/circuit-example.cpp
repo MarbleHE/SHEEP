@@ -1,4 +1,4 @@
-#include "circuit.hpp"
+#include "sheep/circuit.hpp"
 
 int main(void) {
   Circuit c;                         // construct empty circuit

@@ -4,7 +4,7 @@
 
 #include <fstream>
 
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 
 int main(void) {
   std::string filename = "test_circuit.circ";

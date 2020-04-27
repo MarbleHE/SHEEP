@@ -1,9 +1,9 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
-#include "all_equal.hpp"
-#include "context.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/all_equal.hpp"
+#include "sheep/context.hpp"
+#include "sheep/simple-circuits.hpp"
 
 int main(int argc, const char** argv) {
   if (argc < 3) {

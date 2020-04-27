@@ -2,9 +2,9 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-seal-ckks.hpp"
-#include "circuit-repo.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/context-seal-ckks.hpp"
+#include "sheep/circuit-repo.hpp"
+#include "sheep/simple-circuits.hpp"
 #include <complex>
 #include <cmath>
 

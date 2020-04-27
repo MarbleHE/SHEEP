@@ -15,7 +15,7 @@
 #include "cpprest/http_listener.h"
 #include "cpprest/json.h"
 #include "cpprest/uri.h"
-#include "sheep-server.hpp"
+#include "sheep/sheep-server.hpp"
 
 using namespace std;
 using namespace web;

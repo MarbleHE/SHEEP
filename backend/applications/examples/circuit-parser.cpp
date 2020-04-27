@@ -1,7 +1,7 @@
 #include <fstream>
 #include <map>
 #include <sstream>
-#include "circuit.hpp"
+#include "sheep/circuit.hpp"
 
 int main(int argc, char** argv) {
   if (argc <= 1) {

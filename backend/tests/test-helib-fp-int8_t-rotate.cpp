@@ -1,8 +1,8 @@
 #include <cassert>
 #include <memory>
-#include "context-helib.hpp"
+#include "sheep/context-helib.hpp"
 
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 
 using namespace SHEEP;
 

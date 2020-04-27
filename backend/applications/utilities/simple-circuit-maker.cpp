@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 
 int main(int argc, const char** argv) {
   if (argc < 4) {

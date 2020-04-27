@@ -1,3 +1,15 @@
+# Somewhat ugly hack, should be per-target
+include_directories(${Sheep_SOURCE_DIR}/include)
+include_directories(${HElib_INCLUDE_DIRS})
+include_directories(${TFHE_INCLUDE_DIRS})
+include_directories(${SEAL_INCLUDE_DIRS})
+include_directories(${PALISADE_INCLUDE_DIRS})
+include_directories(${LB_INCLUDE_DIRS})
+include_directories(${TBB_INCLUDE_DIRS})
+link_libraries(pthread)
+
+enable_testing()
+
 set(CTEST_OUTPUT_ON_FAILURE TRUE)
 
 # # Flags for profiling

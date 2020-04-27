@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-tfhe.hpp"
+#include "sheep/context-tfhe.hpp"
 
 typedef std::chrono::duration<double, std::micro> DurationT;
 

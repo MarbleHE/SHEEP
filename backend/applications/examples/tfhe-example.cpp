@@ -1,6 +1,6 @@
 #include <memory>
 #include <vector>
-#include "context-tfhe.hpp"
+#include "sheep/context-tfhe.hpp"
 
 int main(void) {
   Circuit C;  // construct empty circuit

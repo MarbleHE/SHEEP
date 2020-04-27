@@ -2,7 +2,7 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-clear.hpp"
+#include "sheep/context-clear.hpp"
 
 int main(void) {
   using namespace SHEEP;

@@ -1,6 +1,6 @@
 #include <cassert>
 #include <fstream>
-#include "circuit.hpp"
+#include "sheep/circuit.hpp"
 
 int main(void) {
   std::ifstream good("tests/good.sheep");

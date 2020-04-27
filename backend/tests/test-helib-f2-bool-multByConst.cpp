@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 #include "circuit-test-util.hpp"
-#include "context-helib.hpp"
+#include "sheep/context-helib.hpp"
 
 int main(void) {
   using namespace SHEEP;

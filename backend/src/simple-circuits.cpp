@@ -1,5 +1,5 @@
-#include "simple-circuits.hpp"
-#include "circuit-util.hpp"
+#include "sheep/simple-circuits.hpp"
+#include "sheep/circuit-util.hpp"
 
 Circuit single_unary_gate_circuit(Gate g) {
   Circuit C;

@@ -22,8 +22,8 @@
 using namespace std::complex_literals;
 
 
-#include "sheep-server.hpp"
-#include "protect-eval.hpp"
+#include "sheep/sheep-server.hpp"
+#include "sheep/protect-eval.hpp"
 
 using namespace std;
 using namespace web;

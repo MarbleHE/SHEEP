@@ -1,19 +1,19 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "circuit.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/circuit.hpp"
+#include "sheep/simple-circuits.hpp"
 
 // we attempt the evaluation with several contexts
 
-#include "context-clear.hpp"
+#include "sheep/context-clear.hpp"
 
 #if HAVE_TFHE
-#include "context-tfhe.hpp"
+#include "sheep/context-tfhe.hpp"
 #endif
 
 #if HAVE_HElib
-#include "context-helib.hpp"
+#include "sheep/context-helib.hpp"
 #endif
 
 // Since we need a value for USE_TBB below

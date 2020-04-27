@@ -2,8 +2,8 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-palisade.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/context-palisade.hpp"
+#include "sheep/simple-circuits.hpp"
 
 using namespace SHEEP;
 typedef ContextPalisade<int8_t>::Plaintext Plaintext;

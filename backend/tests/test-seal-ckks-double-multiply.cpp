@@ -3,9 +3,9 @@
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 #include "circuit-test-util.hpp"
-#include "context-seal-ckks.hpp"
+#include "sheep/context-seal-ckks.hpp"
 
 typedef std::chrono::duration<double, std::micro> DurationT;
 

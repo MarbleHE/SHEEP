@@ -2,8 +2,8 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "context-seal-bfv.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/context-seal-bfv.hpp"
+#include "sheep/simple-circuits.hpp"
 
 typedef std::chrono::duration<double, std::micro> DurationT;
 

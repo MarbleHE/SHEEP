@@ -1,8 +1,8 @@
 #include <memory>
 
-#include "context-lp.hpp"
+#include "sheep/context-lp.hpp"
 
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 
 using namespace SHEEP;
 

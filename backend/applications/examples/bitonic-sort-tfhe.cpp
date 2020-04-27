@@ -1,9 +1,9 @@
 #include <cstdint>
 #include <iostream>
-#include "simple-circuits.hpp"
-//#include "context-clear.hpp"
-#include "all_equal.hpp"
-#include "context-tfhe.hpp"
+#include "sheep/simple-circuits.hpp"
+//#include "sheep/context-clear.hpp"
+#include "sheep/all_equal.hpp"
+#include "sheep/context-tfhe.hpp"
 
 int main(void) {
   using namespace SHEEP;

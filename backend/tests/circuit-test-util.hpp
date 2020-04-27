@@ -1,8 +1,8 @@
 #ifndef CIRCUIT_TEST_UTIL_HPP
 #define CIRCUIT_TEST_UTIL_HPP
 
-#include "circuit.hpp"
-#include "all_equal.hpp"
+#include "sheep/circuit.hpp"
+#include "sheep/all_equal.hpp"
 
 template <typename ContextT, typename PTcontainer>
 bool eval_encrypted_check_equal(ContextT ctx, Circuit circ, PTcontainer in,

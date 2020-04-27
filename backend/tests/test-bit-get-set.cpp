@@ -1,7 +1,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
-#include "bits.hpp"
+#include "sheep/bits.hpp"
 
 int main(void) {
   uint8_t a(0);

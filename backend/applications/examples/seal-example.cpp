@@ -1,8 +1,8 @@
 #include <memory>
 
-#include "context-seal-bfv.hpp"
+#include "sheep/context-seal-bfv.hpp"
 
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 
 using namespace SHEEP;
 

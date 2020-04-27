@@ -9,4 +9,4 @@ ADD tests SHEEP/backend/tests
 
 RUN rm -fr SHEEP/backend/build; mkdir SHEEP/backend/build
 
-RUN cd SHEEP/backend/build; export CC=gcc-9; export CXX=g++-9; cmake ../
+RUN cd SHEEP/backend/build; export CC=gcc-9; export CXX=g++-9; cmake ../; make -j8; make install

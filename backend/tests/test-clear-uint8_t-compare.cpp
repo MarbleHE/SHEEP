@@ -1,9 +1,9 @@
 #include <cassert>
 #include <cstdint>
 #include "circuit-test-util.hpp"
-#include "circuit.hpp"
-#include "context-clear.hpp"
-#include "simple-circuits.hpp"
+#include "sheep/circuit.hpp"
+#include "sheep/context-clear.hpp"
+#include "sheep/simple-circuits.hpp"
 
 using namespace SHEEP;
 

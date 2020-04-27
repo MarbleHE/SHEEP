@@ -1,8 +1,8 @@
 #include <cassert>
 #include <memory>
-#include "context-clear.hpp"
+#include "sheep/context-clear.hpp"
 
-#include "circuit-repo.hpp"
+#include "sheep/circuit-repo.hpp"
 
 using namespace SHEEP;
 typedef std::chrono::duration<double, std::micro> DurationT;

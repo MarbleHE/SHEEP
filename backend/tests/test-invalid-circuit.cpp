@@ -1,4 +1,4 @@
-#include "circuit.hpp"
+#include "sheep/circuit.hpp"
 
 static void test_good(void) {
   Circuit C;

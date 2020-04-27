@@ -1,3 +1,13 @@
+# Somewhat ugly hack, should be per-target
+include_directories(${Sheep_SOURCE_DIR}/include)
+include_directories(${HElib_INCLUDE_DIRS})
+include_directories(${TFHE_INCLUDE_DIRS})
+include_directories(${SEAL_INCLUDE_DIRS})
+include_directories(${PALISADE_INCLUDE_DIRS})
+include_directories(${LB_INCLUDE_DIRS})
+include_directories(${TBB_INCLUDE_DIRS})
+link_libraries(pthread)
+
 ####################################################################################
 ## CLEAR
 ####################################################################################
@@ -32,6 +42,8 @@ if (HElib_FOUND)
   add_executable(helib-context-example
     examples/helib-context-example.cpp
             ${Sheep_SOURCE_DIR}/src/circuit.cpp)
+
+  target_include_directories(helib-context-example PRIVATE ${HElib_INCLUDE_DIRS})
 
   add_test(NAME helib-context-example COMMAND $<TARGET_FILE:helib-context-example>)
 
