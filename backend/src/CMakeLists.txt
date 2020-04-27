@@ -84,6 +84,9 @@ install(TARGETS sheep
         RUNTIME DESTINATION bin
         INCLUDES DESTINATION include)
 
+install(DIRECTORY "../include/"
+       DESTINATION "include")
+
 install(EXPORT SheepTargets
         FILE SheepTargets.cmake
         NAMESPACE Sheep::
