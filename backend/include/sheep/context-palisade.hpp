@@ -30,7 +30,12 @@ namespace SHEEP {
     typedef lbcrypto::Ciphertext<lbcrypto::Poly> Ciphertext;
     typedef std::int64_t Plaintext64;
 
-    ContextPalisade(int plaintextSize = -1, int slotSize = -1, int nMults = -1, int multDepth = -1)
+    /// Palisade Context constructor for BFV scheme
+    /// \param plaintextSize Number of bits required to represent the plaintext inputs to be use within the circuit
+    /// \param slotSize Size of biggest vector to be used for batching within the circuit
+    /// \param multDepth Maximum amount of multiplications to be calculated in series.
+    /// \return A palisade BFV context
+    ContextPalisade(int plaintextSize = -1, int slotSize = -1, int multDepth = -1)
     {
       m = 22;
       this->m_param_name_map.insert({"m", m});
@@ -67,7 +72,7 @@ namespace SHEEP {
 
       lbcrypto::BigInteger delta(modulusQ.DividedBy(modulusP));
 
-      if (nMults == -1) {
+      if (multDepth == -1) {
         m_PalisadeContext =
             lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(
                 params, encodingParams, 1, stdDev, delta.ToString(), OPTIMIZED,
@@ -75,7 +80,8 @@ namespace SHEEP {
                 1, 9, 1.006, bigEvalMultModulusAlt.ToString(),
                 bigEvalMultRootOfUnityAlt.ToString());
       } else {
-        m_PalisadeContext = lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(encodingParams,lbcrypto::HEStd_128_classic,1,3.6,0,(int) ceil(log2(nMults)),0,OPTIMIZED);
+          //TODO: This constructor might not be used correctly, or a different Constructor might be suitable...
+        m_PalisadeContext = lbcrypto::CryptoContextFactory<lbcrypto::Poly>::genCryptoContextBFV(encodingParams,lbcrypto::HEStd_128_classic,1,3.6,0,multDepth,0,OPTIMIZED);
       }
 
       m_PalisadeContext->Enable(ENCRYPTION);
