@@ -9,7 +9,7 @@ set(SOURCE_FILES
         circuit-util.cpp
         simple-circuits.cpp)
 
-set(HEADERS
+set(PUBLIC_HEADERS
         ${PROJECT_SOURCE_DIR}/include/sheep/all_equal.hpp
         ${PROJECT_SOURCE_DIR}/include/sheep/bits.hpp
         ${PROJECT_SOURCE_DIR}/include/sheep/circuit.hpp
@@ -31,7 +31,7 @@ set(HEADERS
         ${PROJECT_SOURCE_DIR}/include/sheep/simple-circuits.hpp)
 
 add_library(sheep ${SOURCE_FILES})
-set_target_properties(sheep PROPERTIES PUBLIC_HEADER ${HEADERS})
+set_target_properties(sheep PROPERTIES PUBLIC_HEADER ${PUBLIC_HEADERS})
 
 add_library(Sheep::sheep ALIAS sheep)
 target_include_directories(sheep PUBLIC
@@ -118,6 +118,4 @@ install(DIRECTORY "../include/"
 install(EXPORT SheepTargets
         FILE SheepTargets.cmake
         NAMESPACE Sheep::
-        DESTINATION lib/cmake/Sheep
-        )
-
+        DESTINATION lib/cmake/Sheep)
